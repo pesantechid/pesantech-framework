@@ -291,6 +291,14 @@ class ContentSeeder extends Seeder
             }
         }
 
+        $maxId = \DB::table('posts')->max('id') ?? 0;
+        $driver = \DB::getDriverName();
+        if ($driver === 'pgsql') {
+            \DB::statement("SELECT setval(pg_get_serial_sequence('posts', 'id'), {$maxId} + 1, false)");
+        } elseif ($driver === 'mysql') {
+            \DB::statement("ALTER TABLE posts AUTO_INCREMENT = " . ($maxId + 1));
+        }
+
         Post::factory()->count(50)->create();
     }
 

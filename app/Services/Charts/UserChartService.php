@@ -66,6 +66,8 @@ class UserChartService extends ChartService
         } else {
             if ($driver === 'sqlite') {
                 $selectRaw = "strftime('%Y-%m', created_at) as month, COUNT(id) as total";
+            } elseif ($driver === 'pgsql') {
+                $selectRaw = "TO_CHAR(created_at, 'YYYY-MM') as month, COUNT(id) as total";
             } else {
                 $selectRaw = "DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(id) as total";
             }
