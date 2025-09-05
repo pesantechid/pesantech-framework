@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
         ]);
 
         // Run factory to create additional users with unique details.
-        User::factory()->count(500)->create();
-        $this->command->info('Users table seeded with 502 users!');
+        User::factory()->count(10)->create();
+        $this->command->info('Users table seeded with 13 users!');
     }
 }
