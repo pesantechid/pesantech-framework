@@ -82,7 +82,7 @@ x-init="
                                          alt="{{ config('app.name') }}">
                                 </a>
                                 <p class="text-center text-gray-400 dark:text-white/60">
-                                    {{ __('Free and Open-Source Laravel Admin Dashboard Template') }}
+                                    {{ __('Rapi Maju Bersama – Dashboard Management System') }}
                                 </p>
                             </div>
                         </div>
