@@ -40,7 +40,7 @@
 x-init="
     darkMode = JSON.parse(localStorage.getItem('darkMode'));
     $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
-    
+
     // Add loaded class for smooth fade-in
     $nextTick(() => {
         document.querySelector('.auth-container').classList.add('loaded');
@@ -78,7 +78,8 @@ x-init="
 
                             <div class="flex flex-col items-center max-w-xs">
                                 <a href="#" class="block mb-4">
-                                    <img src="/images/logo/lara-dashboard-dark.png" alt="Logo">
+                                    <img src="{{ config('settings.site_logo_dark') ?? '/images/logo/lara-dashboard-dark.png' }}"
+                                         alt="{{ config('app.name') }}">
                                 </a>
                                 <p class="text-center text-gray-400 dark:text-white/60">
                                     {{ __('Free and Open-Source Laravel Admin Dashboard Template') }}
@@ -86,7 +87,7 @@ x-init="
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Toggler -->
                     <div class="fixed z-50 hidden bottom-6 right-6 sm:flex gap-2 items-center justify-center">
                         @include('backend.layouts.partials.locale-switcher', [
