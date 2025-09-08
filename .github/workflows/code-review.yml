@@ -2,11 +2,10 @@ name: Code Review
 
 on:
   pull_request:
-    branches: [test] #SKIP it for now, enable it agian, once Claude code is ready. set then to `main` here.
+    branches: [main]
 
 jobs:
   code-review:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft != true
     runs-on: ubuntu-latest
     permissions:
       contents: read
