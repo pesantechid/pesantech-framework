@@ -1,4 +1,4 @@
-{!! ld_apply_filters('inside_post_form_start', '') !!}
+{!! Hook::applyFilters(PostFilterHook::INSIDE_POST_FORM_START, '') !!}
 
 <input type="hidden" name="post_id" value="{{ $post->id ?? '' }}" data-post-id="{{ $post->id ?? '' }}">
 <input type="hidden" name="post_type" value="{{ $postType }}" data-post-type="{{ $postType }}">
@@ -24,7 +24,7 @@
                         <input type="text" name="title" id="title" required x-model="title" maxlength="255"
                             class="form-control">
                     </div>
-                    {!! ld_apply_filters('post_form_after_title', '') !!}
+                    {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_TITLE, '') !!}
 
                     <!-- Compact Slug UI -->
                     <div class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-300">
@@ -52,7 +52,7 @@
                             </button>
                         </div>
                     </div>
-                    {!! ld_apply_filters('post_form_after_slug', '') !!}
+                    {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_SLUG, '') !!}
                 </div>
 
                 @if ($postTypeModel->supports_editor)
@@ -62,7 +62,7 @@
                             <textarea name="content" id="content" rows="10">{!! old('content', $post->content ?? '') !!}</textarea>
                     </div>
                 @endif
-                {!! ld_apply_filters('post_form_after_content', '') !!}
+                {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_CONTENT, '') !!}
 
                 @if ($postTypeModel->supports_excerpt)
                     <div class="space-y-1">
@@ -75,7 +75,7 @@
                             {{ __('Leave empty to auto-generate from content') }}</p>
                     </div>
                 @endif
-                {!! ld_apply_filters('post_form_after_excerpt', '') !!}
+                {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_EXCERPT, '') !!}
             </div>
         </div>
 
@@ -92,14 +92,14 @@
             <div class="p-3 space-y-2 sm:p-4">
                 <!-- Status with Combobox -->
                 @php
-                    $statusOptions = ld_apply_filters('post_status_options', [
+                    $statusOptions = Hook::applyFilters(PostFilterHook::POST_STATUS_OPTIONS, [
                         ['value' => 'draft', 'label' => __('Draft')],
-                        ['value' => 'publish', 'label' => __('Published')],
+                        ['value' => 'published', 'label' => __('Published')],
                         ['value' => 'pending', 'label' => __('Pending Review')],
-                        ['value' => 'future', 'label' => __('Scheduled')],
+                        ['value' => 'scheduled', 'label' => __('Scheduled')],
                         ['value' => 'private', 'label' => __('Private')],
                     ]);
-                    $currentStatus = old('status', $post->status ?? 'draft');
+                    $currentStatus = old('status', $post->status ?? App\Enums\PostStatus::DRAFT->value);
                 @endphp
 
                 <x-inputs.combobox
@@ -112,15 +112,15 @@
                     x-model="status"
                 />
 
-                {!! ld_apply_filters('post_form_after_status', '') !!}
+                {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_STATUS, '') !!}
 
                 <!-- Publish Date (for scheduled posts) -->
                 <div x-data="{
-                    showSchedule: {{ isset($post) && (old('status', $post->status) === 'future' || $post->published_at) ? 'true' : 'false' }},
-                    status: '{{ old('status', $post->status ?? 'draft') }}',
+                    showSchedule: {{ isset($post) && (old('status', $post->status) === 'scheduled' || $post->published_at) ? 'true' : 'false' }},
+                    status: '{{ old('status', $post->status ?? App\Enums\PostStatus::DRAFT->value) }}',
                     init() {
                         this.$watch('status', value => {
-                            if (value === 'future') {
+                            if (value === 'scheduled') {
                                 this.showSchedule = true;
                             }
                         });
@@ -128,7 +128,7 @@
                 }">
                     <div class="mb-2">
                         <input type="checkbox" id="schedule_post" name="schedule_post" x-model="showSchedule"
-                            x-on:change="if(showSchedule && status !== 'future') status = 'future'; $dispatch('input', status)"
+                            x-on:change="if(showSchedule && status !== 'scheduled') status = 'scheduled'; $dispatch('input', status)"
                             class="form-checkbox mr-2">
                         <label for="schedule_post"
                             class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Schedule this post') }}</label>
@@ -140,14 +140,17 @@
                                 isset($post) && $post->published_at
                                     ? $post->published_at->format('Y-m-d H:i')
                                     : now()->addDay()->format('Y-m-d H:i'),
-                            )" :min-date="now()->format('Y-m-d')" :help-text="__('Schedule when this post should be published')" />
+                            )"
+                            :min-date="now()->format('Y-m-d')"
+                            :help-text="__('Schedule when this post should be published')"
+                        />
                     </div>
                 </div>
-                {!! ld_apply_filters('post_form_after_publish_date', '') !!}
+                {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_PUBLISH_DATE, '') !!}
                 <div class="mt-4">
                     <x-buttons.submit-buttons cancelUrl="{{ route('admin.posts.index', $postType) }}" />
                 </div>
-                {!! ld_apply_filters('post_form_after_submit_buttons', '') !!}
+                {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_SUBMIT_BUTTONS, '') !!}
             </div>
         </div>
 
@@ -167,7 +170,7 @@
                 />
             </div>
         @endif
-        {!! ld_apply_filters('post_form_after_featured_image', '') !!}
+        {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_FEATURED_IMAGE, '') !!}
 
         @if ($postTypeModel->hierarchical)
             <!-- Parent -->
@@ -197,7 +200,7 @@
                 </div>
             </div>
         @endif
-        {!! ld_apply_filters('post_form_after_content_parent', '') !!}
+        {!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_CONTENT_PARENT, '') !!}
 
         <!-- Taxonomies -->
         @if (!empty($taxonomies))

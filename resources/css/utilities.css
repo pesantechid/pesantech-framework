@@ -18,6 +18,11 @@
         transition: opacity 0.15s ease-in-out;
     }
 
+    .pagination-links > div > nav,
+    .pagination-links > div > nav > div:nth-child(2) {
+        @apply flex gap-3;
+    }
+
     /* Optimize fonts loading */
     .font-display-swap {
         font-display: swap;

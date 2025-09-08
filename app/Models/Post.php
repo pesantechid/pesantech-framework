@@ -8,7 +8,10 @@ use App\Services\Content\ContentService;
 use App\Services\Content\PostType;
 use App\Concerns\QueryBuilderTrait;
 use App\Concerns\HasMedia;
+use App\Enums\PostStatus;
+use App\Observers\PostObserver;
 use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+#[ObservedBy([PostObserver::class])]
 class Post extends Model implements SpatieHasMedia
 {
     use HasFactory;
@@ -58,6 +62,13 @@ class Post extends Model implements SpatieHasMedia
                 $post->user_id = Auth::id();
             }
         });
+    }
+
+    public static function getPostStatuses(): array
+    {
+        return collect(PostStatus::cases())
+            ->mapWithKeys(fn ($case) => [$case->value => Str::of($case->name)->title()])
+            ->toArray();
     }
 
     /**
@@ -284,7 +295,7 @@ class Post extends Model implements SpatieHasMedia
      */
     public function scopePublished(Builder $query): void
     {
-        $query->where('status', 'publish')
+        $query->where('status', PostStatus::PUBLISHED->value)
             ->where(function ($query) {
                 $query->whereNull('published_at')
                     ->orWhere('published_at', '<=', now());

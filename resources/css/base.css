@@ -212,14 +212,4 @@
         height: auto;
         max-width: 100%;
     }
-
-    /* Reduce animation duration for faster perceived loading */
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.15s !important;
-        animation-delay: 0s !important;
-        transition-duration: 0.15s !important;
-        transition-delay: 0s !important;
-    }
 }

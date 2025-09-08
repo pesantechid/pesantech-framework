@@ -2,13 +2,13 @@
 
 namespace App\View\Components;
 
-use App\Contacts\MediaInterface;
+use App\Contracts\MediaInterface;
 use Illuminate\View\Component;
 
 class MediaImage extends Component
 {
     /**
-     * @var \App\Contacts\MediaInterface
+     * @var \App\Contracts\MediaInterface
      */
     public $model;
     /**

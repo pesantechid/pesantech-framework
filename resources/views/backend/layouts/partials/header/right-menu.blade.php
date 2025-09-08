@@ -1,13 +1,17 @@
+{!! Hook::applyFilters(AdminFilterHook::HEADER_RIGHT_MENU_BEFORE, '') !!}
+
 <div class="flex items-center gap-1">
     <div class="hidden md:block">
         @include('backend.layouts.partials.demo-mode-notice')
     </div>
 
+    {!! Hook::applyFilters(AdminFilterHook::HEADER_BEFORE_LOCALE_SWITCHER, '') !!}
     <x-tooltip title="{{ __('Change locale') }}" position="bottom">
         @include('backend.layouts.partials.locale-switcher')
     </x-tooltip>
+    {!! Hook::applyFilters(AdminFilterHook::HEADER_AFTER_LOCALE_SWITCHER, '') !!}
 
-    @php echo ld_apply_filters('dark_mode_toggler_before_button', ''); @endphp
+    {!! Hook::applyFilters(AdminFilterHook::DARK_MODE_TOGGLER_BEFORE_BUTTON, '') !!}
 
     <x-tooltip title="{{ __('Toggle theme mode') }}" position="bottom">
         <button id="darkModeToggle"
@@ -17,9 +21,9 @@
             <iconify-icon icon="lucide:sun" width="24" height="24" class="dark:hidden"></iconify-icon>
         </button>
     </x-tooltip>
-    @php ld_apply_filters('dark_mode_toggler_after_button', '') @endphp
+    {!! Hook::applyFilters(AdminFilterHook::DARK_MODE_TOGGLER_AFTER_BUTTON, '') !!}
 
-    @if (env('SHOW_DEMO_COMPONENT_PREVIEW'))
+    @if (config('app.show_demo_component_preview', false))
         <x-tooltip title="{{ __('Preview demo components') }}" position="bottom">
             <a href="{{ route('demo.preview') }}" class="hover:text-dark-900 relative flex p-2 items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
                 <iconify-icon icon="lucide:view" width="22" height="22"></iconify-icon>
@@ -36,7 +40,11 @@
             </a>
         </x-tooltip>
     @endif
+
+    {!! Hook::applyFilters(AdminFilterHook::HEADER_AFTER_ACTIONS, '') !!}
 </div>
+
+{!! Hook::applyFilters(AdminFilterHook::USER_DROPDOWN_BEFORE, '') !!}
 
 <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
     <a class="flex items-center text-gray-700 dark:text-gray-300" href="#"
@@ -46,7 +54,6 @@
         </span>
     </a>
 
-    <!-- Dropdown Start -->
     <div x-show="dropdownOpen"
         class="absolute right-0 mt-[17px] flex w-[220px] flex-col rounded-md border bg-white dark:bg-gray-700 border-gray-200  p-3 shadow-theme-lg dark:border-gray-800 z-100"
         style="display: none">
@@ -59,6 +66,8 @@
             </span>
         </div>
 
+        {!! Hook::applyFilters(AdminFilterHook::USER_DROPDOWN_AFTER_USER_INFO, '') !!}
+
         <ul class="flex flex-col gap-1 border-b border-gray-200 pb-2 dark:border-gray-800">
             <li>
                 <a href="{{ route('profile.edit') }}"
@@ -68,6 +77,8 @@
                 </a>
             </li>
         </ul>
+        {!! Hook::applyFilters(AdminFilterHook::USER_DROPDOWN_AFTER_PROFILE_LINKS, '') !!}
+
         <form method="POST" action="{{ route('logout') }}" class="inline">
             @csrf
             <button type="submit"
@@ -76,6 +87,8 @@
                 {{ __('Logout') }}
             </button>
         </form>
+
+        {!! Hook::applyFilters(AdminFilterHook::USER_DROPDOWN_AFTER_LOGOUT, '') !!}
 
         @if (session()->has('original_user_id'))
             @php
@@ -93,5 +106,6 @@
             @endif
         @endif
     </div>
-    <!-- Dropdown End -->
 </div>
+
+{!! Hook::applyFilters(AdminFilterHook::HEADER_RIGHT_MENU_AFTER, '') !!}

@@ -103,17 +103,21 @@ This document outlines the coding standards and best practices for contributing 
 1. **Extensibility**
 
     - If implementing functionality that might be useful for extension, create action/filter hooks, don't hardcode functionality.
-    - Use the `ld_add_action()` and `ld_do_action()` functions for actions which will do something but not return anything.
-    - Use the `ld_add_filter()` and `ld_apply_filters()` functions for filters which will return something.
+    - Use the `Hook::addAction()` and `Hook::doAction()` functions for actions which will do something but not return anything.
+    - Use the `Hook::addFilter()` and `Hook::applyFilters()` functions for filters which will return something.
 
-    Example of adding a filter hook to modify the admin menu groups:
+   Example of adding a filter hook to modify the admin menu groups:
 
-    ```php
-    ld_add_filter('admin_menu_groups_before_sorting', addNewMenuGroup());
-    function addNewMenuGroup() {
-        // Your code to add a new menu group
+   ```php
+   <?php
+   use App\Support\Facades\Hook;
+
+   Hook::addFilter('admin_menu_groups_before_sorting', addNewMenuGroup());
+   function addNewMenuGroup($groups) {
+      // Your code to add a new menu group
+      return $groups; // or modified $groups
     }
-    ```
+   ```
 
     - If you feel that a certain functionality should be extensible, consider creating a new Pull request to add that extendibility hook.
 
@@ -184,7 +188,7 @@ namespace App\Http\Requests\Post;
    - Variables: Use camelCase for variable names (e.g., `$userData`).
    - Constants: Use UPPER_SNAKE_CASE for constants (e.g., `MAX_USERS`).
    - Exceptions: Use PascalCase with `Exception` suffix (e.g., `ModuleException`).
-   - Traits, Models, Controllers: Plural, PascalCase (e.g., `UsersController`, `Post`, `HasRolesTrait`).
+   - Traits, Models, Controllers: Singular, PascalCase (e.g., `UserController`, `Post`, `HasRolesTrait`).
    - Services: Singular with Service suffix, PascalCase (e.g., `UserService`).
    - Database: Use snake_case for tables and columns.
 

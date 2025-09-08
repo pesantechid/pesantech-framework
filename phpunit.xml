@@ -25,7 +25,6 @@
     <source>
         <include>
             <directory>app</directory>
-            <directory>modules</directory>
         </include>
         <exclude>
             <directory suffix=".php">./modules/*/config</directory>

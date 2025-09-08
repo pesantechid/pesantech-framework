@@ -7,6 +7,7 @@
     'modalTrigger' => 'deleteModalOpen',
     'cancelButtonText' => __('No, cancel'),
     'confirmButtonText' => __('Yes, Confirm'),
+    'wireClick' => null,
 ])
 
 <div
@@ -49,10 +50,7 @@
             <p class="text-gray-500 dark:text-gray-300">{{ $content }}</p>
         </div>
         <div class="flex items-center justify-end gap-3 border-t border-gray-100 p-4 dark:border-gray-800">
-            <form id="{{ $formId }}" action="{{ $formAction }}" method="POST">
-                @method('DELETE')
-                @csrf
-
+            @if($wireClick)
                 <button
                     type="button"
                     x-on:click="{{ $modalTrigger }} = false"
@@ -60,14 +58,33 @@
                 >
                     {{ $cancelButtonText }}
                 </button>
-
                 <button
-                    type="submit"
+                    type="button"
+                    wire:click="{{ $wireClick }}"
+                    x-on:click="{{ $modalTrigger }} = false"
                     class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-800"
                 >
                     {{ $confirmButtonText }}
                 </button>
-            </form>
+            @else
+                <form id="{{ $formId }}" action="{{ $formAction }}" method="POST">
+                    @method('DELETE')
+                    @csrf
+                    <button
+                        type="button"
+                        x-on:click="{{ $modalTrigger }} = false"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                    >
+                        {{ $cancelButtonText }}
+                    </button>
+                    <button
+                        type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-800"
+                    >
+                        {{ $confirmButtonText }}
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 </div>

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Role;
 
+use App\Enums\Hooks\RoleFilterHook;
 use App\Http\Requests\FormRequest;
+use App\Support\Facades\Hook;
 
 class UpdateRoleRequest extends FormRequest
 {
@@ -24,9 +26,9 @@ class UpdateRoleRequest extends FormRequest
      */
     public function rules(): array
     {
-        $roleId = $this->route('role');
+        $roleId = $this->role ?? $this->route('role');
 
-        return ld_apply_filters('role.update.validation.rules', [
+        return Hook::applyFilters(RoleFilterHook::ROLE_UPDATE_VALIDATION_RULES, [
             /** @example "Senior Content Writer" */
             'name' => 'required|max:100|unique:roles,name,'.$roleId,
 

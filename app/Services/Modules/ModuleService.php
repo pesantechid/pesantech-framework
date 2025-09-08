@@ -75,7 +75,7 @@ class ModuleService
     {
         $modules = [];
         if (! File::exists($this->modulesPath)) {
-            throw new ModuleException(message: __('Modules directory does not exist. Please ensure the "Modules" directory is present in the application root.'));
+            throw new ModuleException(message: __('Modules directory does not exist. Please ensure the "modules" directory is present in the application root.'));
         }
 
         $moduleDirectories = File::directories($this->modulesPath);
@@ -189,7 +189,7 @@ class ModuleService
         Artisan::call('module:disable', ['module' => $module->getName()]);
 
         // Remove the module files.
-        $modulePath = base_path('Modules/' . $module->getName());
+        $modulePath = base_path('modules/' . $module->getName());
 
         if (! is_dir($modulePath)) {
             throw new ModuleException(__('Module directory does not exist. Please ensure the module is installed correctly.'));

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\Hooks\CommonFilterHook;
 use App\Models\Setting;
+use App\Support\Facades\Hook;
 
 class SettingService
 {
@@ -12,7 +14,7 @@ class SettingService
 
     public function __construct()
     {
-        $this->excluded_settings = ld_apply_filters('excluded_setting_keys', [
+        $this->excluded_settings = Hook::applyFilters(CommonFilterHook::EXCLUDED_SETTING_KEYS, [
             '_token',
         ]);
     }

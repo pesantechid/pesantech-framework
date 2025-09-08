@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Enums\Hooks\AdminFilterHook;
 use App\Models\Setting;
 use App\Models\User;
+use App\Support\Facades\Hook;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -34,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         if (
             ! $this->app->runningInConsole() &&
             request()->is('/') &&
-            ld_apply_filters('admin_site_only', true)
+            Hook::applyFilters(AdminFilterHook::ADMIN_SITE_ONLY, true)
         ) {
             redirect('/admin')->send();
             exit;

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\PostStatus;
 use App\Services\Content\ContentService;
 use App\Services\PostService;
 use App\Services\TermService;
@@ -119,11 +120,11 @@ if (! function_exists('get_post_status_class')) {
     function get_post_status_class(string $status): string
     {
         return match ($status) {
-            'publish' => 'badge-success',
-            'draft' => 'badge',
-            'pending' => 'badge-info',
-            'future' => 'badge-warning',
-            'private' => 'badge-secondary',
+            PostStatus::PUBLISHED->value => 'badge-success',
+            PostStatus::DRAFT->value => 'badge',
+            PostStatus::PENDING->value => 'badge-info',
+            PostStatus::SCHEDULED->value => 'badge-warning',
+            PostStatus::PRIVATE->value => 'badge-secondary',
             default => ''
         };
     }

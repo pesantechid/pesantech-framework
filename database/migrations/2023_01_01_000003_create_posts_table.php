@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Enums\PostStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -7,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 return new class () extends Migration {
     /**
      * Run the migrations.
+     * @see PostStatus
      */
     public function up(): void
     {
@@ -18,7 +22,7 @@ return new class () extends Migration {
             $table->string('slug')->unique();
             $table->text('excerpt')->nullable();
             $table->longText('content')->nullable();
-            $table->string('status')->default('draft'); // draft, publish, future, pending, private
+            $table->string('status')->default(PostStatus::DRAFT->value);
             $table->json('meta')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('posts')->onDelete('cascade');
             $table->timestamp('published_at')->nullable();

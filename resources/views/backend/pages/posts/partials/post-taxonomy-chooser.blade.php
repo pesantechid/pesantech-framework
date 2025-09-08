@@ -72,4 +72,4 @@ if (!empty($post)) {
         </div>
     </div>
 </div>
-{!! ld_apply_filters('post_form_after_taxonomy_' . $taxonomy->name, '') !!}
+{!! Hook::applyFilters(PostFilterHook::POST_FORM_AFTER_TAXONOMY->value . $taxonomy->name, '') !!}

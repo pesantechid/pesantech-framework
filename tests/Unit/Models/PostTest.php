@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\PostStatus;
 use App\Models\Post;
 use App\Models\PostMeta;
 use App\Models\Term;
@@ -42,7 +43,7 @@ it('auto generates slug when creating', function () {
         'title' => 'Test Post Title',
         'post_type' => 'post',
         'content' => 'Test content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -56,7 +57,7 @@ it('sets user id from authenticated user when creating', function () {
         'title' => 'Test Post Title',
         'post_type' => 'post',
         'content' => 'Test content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -69,7 +70,7 @@ it('has user relationship', function () {
         'title' => 'Test Post Title',
         'post_type' => 'post',
         'content' => 'Test content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -84,7 +85,7 @@ it('has parent and children relationships', function () {
         'title' => 'Parent Post',
         'post_type' => 'post',
         'content' => 'Parent content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -92,7 +93,7 @@ it('has parent and children relationships', function () {
         'title' => 'Child Post',
         'post_type' => 'post',
         'content' => 'Child content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'parent_id' => $parent->id,
         'user_id' => $user->id,
     ]);
@@ -111,7 +112,7 @@ it('has terms relationship', function () {
         'title' => 'Test Post',
         'post_type' => 'post',
         'content' => 'Test content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -148,7 +149,7 @@ it('can manage post meta', function () {
         'title' => 'Test Post',
         'post_type' => 'post',
         'content' => 'Test content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -190,7 +191,7 @@ it('can filter by published status', function () {
         'title' => 'Published Post',
         'post_type' => 'post',
         'content' => 'Published content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -199,7 +200,7 @@ it('can filter by published status', function () {
         'title' => 'Draft Post',
         'post_type' => 'post',
         'content' => 'Draft content',
-        'status' => 'draft',
+        'status' => PostStatus::DRAFT->value,
         'user_id' => $user->id,
     ]);
 
@@ -208,7 +209,7 @@ it('can filter by published status', function () {
         'title' => 'Scheduled Post',
         'post_type' => 'post',
         'content' => 'Scheduled content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'published_at' => now()->addDays(1),
         'user_id' => $user->id,
     ]);
@@ -227,7 +228,7 @@ it('can filter by post type', function () {
         'title' => 'Blog Post',
         'post_type' => 'post',
         'content' => 'Blog content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -236,7 +237,7 @@ it('can filter by post type', function () {
         'title' => 'About Page',
         'post_type' => 'page',
         'content' => 'About content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -258,7 +259,7 @@ it('can filter by category and tag', function () {
         'title' => 'Post 1',
         'post_type' => 'post',
         'content' => 'Content 1',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 
@@ -266,7 +267,7 @@ it('can filter by category and tag', function () {
         'title' => 'Post 2',
         'post_type' => 'post',
         'content' => 'Content 2',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
 

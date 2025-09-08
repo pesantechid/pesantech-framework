@@ -1,0 +1,15 @@
+<x-datatable
+    :searchbarPlaceholder="$searchbarPlaceholder"
+    :filters="$filters"
+    :customFilters="$customFilters"
+    :perPageOptions="$perPageOptions"
+    :headers="$headers"
+    :enableCheckbox="$enableCheckbox"
+    :noResultsMessage="$noResultsMessage"
+    :customNoResultsMessage="$customNoResultsMessage"
+    :data="$data"
+    :newResourceLinkPermission="$newResourceLinkPermission"
+    :newResourceLinkRouteName="$newResourceLinkRouteName"
+    :newResourceLinkRouteUrl="$this->getCreateRouteUrl()"
+    :newResourceLinkLabel="$newResourceLinkLabel"
+/>

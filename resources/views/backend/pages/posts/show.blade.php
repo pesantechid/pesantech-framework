@@ -1,14 +1,5 @@
-@extends('backend.layouts.app')
-
-@section('title')
- {{ $breadcrumbs['title'] }} | {{ config('app.name') }}
-@endsection
-
-@section('admin-content')
-<div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-    <x-breadcrumbs :breadcrumbs="$breadcrumbs" />
-
-    {!! ld_apply_filters('posts_show_after_breadcrumbs', '', $postType) !!}
+<x-layouts.backend-layout :breadcrumbs="$breadcrumbs">
+    {!! Hook::applyFilters(PostFilterHook::POSTS_SHOW_AFTER_BREADCRUMBS, '', $postType) !!}
 
     <div class="space-y-6">
         <div class="rounded-md border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -102,5 +93,6 @@
             </div>
         </div>
     </div>
-</div>
-@endsection
+
+    {!! Hook::applyFilters(PostFilterHook::POSTS_SHOW_AFTER_CONTENT, '', $postType) !!}
+</x-layouts.backend-layout>

@@ -93,7 +93,7 @@ trait QueryBuilderTrait
      */
     public function scopePaginateData(Builder $query, array $options = []): LengthAwarePaginator
     {
-        $perPage = $options['per_page'] ?? 15;
+        $perPage = $options['per_page'] ?? config('settings.default_pagination', 10);
 
         return $query->paginate($perPage);
     }

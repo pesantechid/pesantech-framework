@@ -1,4 +1,4 @@
-@php echo ld_apply_filters('settings_performance_security_tab_before_section_start', ''); @endphp
+{!! Hook::applyFilters(SettingFilterHook::SETTINGS_PERFORMANCE_SECURITY_TAB_BEFORE_SECTION_START, '') !!}
 
 {{-- Admin Login Route Settings --}}
 <div class="rounded-md border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03]">
@@ -88,4 +88,4 @@
     @include('backend.pages.settings.recaptcha-settings')
 </div>
 
-@php echo ld_apply_filters('settings_performance_security_tab_after_section_end', '') @endphp
+{!! Hook::applyFilters(SettingFilterHook::SETTINGS_PERFORMANCE_SECURITY_TAB_AFTER_SECTION_END, '') !!}

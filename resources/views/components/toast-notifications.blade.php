@@ -1,25 +1,34 @@
-<div x-data="{
-        notifications: [],
-        displayDuration: 5000,
-        soundEffect: false,
+@props(['soundEffect' => false, 'displayDuration' => 5000])
 
-        addNotification({ variant = 'info', title = null, message = null}) {
-            const id = Date.now()
-            const notification = { id, variant, title, message }
+<div
+    wire:ignore.self
+    x-data="{
+        notifications: [],
+        displayDuration: '{{ $displayDuration }}',
+        soundEffect: '{{ $soundEffect }}',
+
+        addNotification({ variant = 'info', title = null, message = null }) {
+            const id = Date.now();
+            // Use provided title/message if present, fallback only if both missing.
+            if (!title && !message) {
+                title = variant.charAt(0).toUpperCase() + variant.slice(1);
+                message = '';
+            }
+            const notification = { id, variant, title, message };
 
             // Keep only the most recent 10 notifications
             if (this.notifications.length >= 10) {
-                this.notifications.splice(0, this.notifications.length - 9)
+                this.notifications.splice(0, this.notifications.length - 9);
             }
 
             // Add the new notification to the notifications stack
-            this.notifications.push(notification)
+            this.notifications.push(notification);
 
             if (this.soundEffect) {
                 // Play the notification sound (optional)
                 try {
-                    const notificationSound = new Audio('/sounds/notification.mp3')
-                    notificationSound.play().catch(() => {})
+                    const notificationSound = new Audio('/sounds/notification.mp3');
+                    notificationSound.play().catch(() => {});
                 } catch (error) {
                     // Silently ignore audio errors
                 }
@@ -34,15 +43,15 @@
         },
     }"
     x-on:notify.window="addNotification({
-        variant: $event.detail.variant,
-        title: $event.detail.title,
-        message: $event.detail.message,
+        variant: $event?.detail?.[0]?.variant || $event?.detail?.variant || 'info',
+        title: $event?.detail?.[0]?.title || $event?.detail?.title || 'Notification',
+        message: $event?.detail?.[0]?.message || $event?.detail?.message || '',
     })"
     class="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex max-w-full flex-col gap-3 md:right-4 md:left-auto md:max-w-sm"
     x-on:mouseenter="$dispatch('pause-auto-dismiss')"
     x-on:mouseleave="$dispatch('resume-auto-dismiss')">
 
-    <template x-for="(notification, index) in notifications" x-bind:key="notification.id">
+    <template x-for="(notification, index) in notifications" :key="notification.id">
         <div>
             <!-- Success Notification -->
             <template x-if="notification.variant === 'success'">

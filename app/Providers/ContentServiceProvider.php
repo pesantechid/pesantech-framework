@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Enums\Hooks\ContentActionHook;
 use App\Services\Content\ContentService;
+use App\Support\Facades\Hook;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -73,9 +75,7 @@ class ContentServiceProvider extends ServiceProvider
         ]);
 
         // Allow other plugins/modules to register post types.
-        if (function_exists('ld_do_action')) {
-            ld_do_action('register_post_types', $contentService);
-        }
+        Hook::doAction(ContentActionHook::REGISTER_POST_TYPES, $contentService);
     }
 
     protected function registerDefaultTaxonomies(): void
@@ -103,9 +103,7 @@ class ContentServiceProvider extends ServiceProvider
         ], 'post');
 
         // Allow other plugins/modules to register taxonomies
-        if (function_exists('ld_do_action')) {
-            ld_do_action('register_taxonomies', $contentService);
-        }
+        Hook::doAction(ContentActionHook::REGISTER_TAXONOMIES, $contentService);
     }
 
     protected function getPostTypeIcon(string $postType): string

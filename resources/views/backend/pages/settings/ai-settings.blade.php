@@ -1,4 +1,4 @@
-@php echo ld_apply_filters('settings_ai_integrations_tab_before_section_start', ''); @endphp
+{!! Hook::applyFilters(SettingFilterHook::SETTINGS_AI_INTEGRATIONS_TAB_BEFORE_SECTION_START, '') !!}
 <div class="rounded-md border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="px-5 py-4 sm:px-6 sm:py-5">
         <h3 class="text-base font-medium text-gray-700 dark:text-white/90">
@@ -94,9 +94,9 @@
             </div>
         </div>
     </div>
-    @php echo ld_apply_filters('settings_ai_integrations_tab_before_section_end', '') @endphp
+    {!! Hook::applyFilters(SettingFilterHook::SETTINGS_AI_INTEGRATIONS_TAB_BEFORE_SECTION_END, '') !!}
 </div>
-@php echo ld_apply_filters('settings_ai_integrations_tab_after_section_end', '') @endphp
+{!! Hook::applyFilters(SettingFilterHook::SETTINGS_AI_INTEGRATIONS_TAB_AFTER_SECTION_END, '') !!}
 
 <script>
 function copyToClipboard(inputId) {

@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Concerns\HasUniqueSlug;
 use App\Concerns\QueryBuilderTrait;
 use App\Concerns\HasMedia;
+use App\Observers\TermObserver;
 use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+#[ObservedBy([TermObserver::class])]
 class Term extends Model implements SpatieHasMedia
 {
     use HasFactory;
@@ -30,11 +35,6 @@ class Term extends Model implements SpatieHasMedia
         'parent_id',
         'count',
     ];
-
-    protected function getSlugSourceField($model): string
-    {
-        return 'name';
-    }
 
     /**
      * Boot method to auto-generate slug.
@@ -102,22 +102,6 @@ class Term extends Model implements SpatieHasMedia
     public function sortByPostsCount(Builder $query, string $direction = 'asc'): void
     {
         $query->withCount('posts')->orderBy('posts_count', $direction);
-    }
-
-    /**
-     * Get searchable columns for the model.
-     */
-    protected function getSearchableColumns(): array
-    {
-        return ['name', 'slug', 'description'];
-    }
-
-    /**
-     * Get columns that should be excluded from sorting.
-     */
-    protected function getExcludedSortColumns(): array
-    {
-        return ['description'];
     }
 
     /**

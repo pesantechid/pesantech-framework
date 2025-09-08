@@ -273,7 +273,7 @@ For empty states, use this pattern:
 <div class="space-y-1">
     <label
         for="input-id"
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        class="form-label"
     >
         Label <span class="text-red-500">*</span>
     </label>
@@ -302,32 +302,24 @@ The `form-control` class applies consistent styling with:
 
 ```html
 <div class="space-y-1">
-    <label
-        for="textarea-id"
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-    >
+    <label for="textarea-id" class="form-label">
         Label
     </label>
     <textarea
         id="textarea-id"
         name="textarea_name"
         rows="4"
-        class="form-control !h-auto"
+        class="form-textarea"
         placeholder="Enter text here..."
     ></textarea>
 </div>
 ```
 
-For textareas, use `!h-auto` to override the fixed height from `form-control` or specify a custom height with `!h-30` for example.
-
 ### Select
 
 ```html
 <div class="space-y-1">
-    <label
-        for="select-id"
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-    >
+    <label for="select-id" class="form-label">
         Label
     </label>
     <select id="select-id" name="select_name" class="form-control">
@@ -337,6 +329,8 @@ For textareas, use `!h-auto` to override the fixed height from `form-control` or
     </select>
 </div>
 ```
+
+For select, you can use the `x-inputs.combobox` component for enhanced functionality:
 
 ### Checkbox
 
@@ -351,7 +345,7 @@ For textareas, use `!h-auto` to override the fixed height from `form-control` or
     />
     <label
         for="checkbox-id"
-        class="ml-2 block text-sm text-gray-900 dark:text-white"
+        class="form-label ml-2 mb-0"
     >
         Checkbox label
     </label>
@@ -363,7 +357,7 @@ For textareas, use `!h-auto` to override the fixed height from `form-control` or
 ```html
 <div>
     <label
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+        class="form-label mb-3"
     >
         Options
     </label>
@@ -411,7 +405,7 @@ The component handles displaying existing images and provides a checkbox to remo
 <div class="mb-4 space-y-1">
     <label
         for="file-id"
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        class="form-label"
         >File Label</label
     >
     <input
@@ -622,54 +616,9 @@ Our application supports dark mode. Use these patterns:
 ### Page Layout Example
 
 ```html
-@extends('backend.layouts.app') @section('title') {{ __('Page Title | ') .
-config('app.name') }} @endsection @section('admin-content')
-<div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-    <x-breadcrumbs :breadcrumbs="$breadcrumbs" />
+<x-layouts.backend-layout :breadcrumbs="$breadcrumbs">
 
-    <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1
-                        class="text-xl font-semibold text-gray-900 dark:text-white"
-                    >
-                        {{ __('Page Title') }}
-                    </h1>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {{ __('Page description') }}
-                    </p>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <a
-                        href="{{ route('some.route') }}"
-                        class="btn btn-secondary"
-                    >
-                        <iconify-icon
-                            icon="lucide:arrow-left"
-                            class="mr-2"
-                        ></iconify-icon
-                        >{{ __('Back') }}
-                    </a>
-                    <button class="btn btn-primary">
-                        <iconify-icon
-                            icon="lucide:plus"
-                            class="mr-2"
-                        ></iconify-icon
-                        >{{ __('Create New') }}
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Page Content -->
-        <div class="p-6">
-            <!-- Your content here -->
-        </div>
-    </div>
-</div>
-@endsection
+</x-layouts.backend-layout>
 ```
 
 ### Form Example
@@ -688,7 +637,7 @@ config('app.name') }} @endsection @section('admin-content')
         <div class="space-y-1">
             <label
                 for="name"
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                class="form-label"
             >
                 {{ __('Name') }} <span class="text-red-500">*</span>
             </label>
@@ -709,7 +658,7 @@ config('app.name') }} @endsection @section('admin-content')
         <div class="space-y-1">
             <label
                 for="email"
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                class="form-label"
             >
                 {{ __('Email') }} <span class="text-red-500">*</span>
             </label>

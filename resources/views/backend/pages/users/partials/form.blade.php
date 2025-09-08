@@ -69,6 +69,7 @@
                     emptyText="{{ $emptyText }}"
                 />
             </div>
+            {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_AVATAR, '') !!}
             @if($user)
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 text-center">
                     {{ __('Account created on') }} {{ $user->created_at->format('M d, Y') }}
@@ -83,6 +84,7 @@
                 :userMeta="$userMeta"
                 :showEdit="true"
             />
+            {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_SOCIAL_LINKS, '') !!}
         @endif
     </div>
     @endif
@@ -103,15 +105,18 @@
                     placeholder="{{ __('Enter First Name') }}"
                     class="form-control"
                     autofocus
-                >
+                />
             </div>
+            {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_FIRST_NAME, '', $user) !!}
             <div>
                 <label for="last_name" class="form-label">{{ $lastNameLabel }}</label>
-                <input type="text" name="last_name" id="last_name" required
+                <input type="text" name="last_name" id="last_name"
                     value="{{ old('last_name', $user?->last_name) }}"
                     placeholder="{{ __('Enter Last Name') }}"
-                    class="form-control">
+                    class="form-control"
+                />
             </div>
+            {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_LAST_NAME, '', $user) !!}
             @if($showUsername)
                 <div>
                     <label for="username" class="form-label">{{ $usernameLabel }}</label>
@@ -121,7 +126,9 @@
                         class="form-control"
                         autocomplete="username"
                     >
+
                 </div>
+                {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_USERNAME, '', $user) !!}
             @endif
             <div>
                 <label for="email" class="form-label">{{ $emailLabel }}</label>
@@ -130,7 +137,9 @@
                     placeholder="{{ __('Enter Email') }}"
                     class="form-control">
             </div>
+            {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_EMAIL, '', $user) !!}
 
+            {{-- Password Fields --}}
             <div>
                 <x-inputs.password
                     name="password"
@@ -140,6 +149,7 @@
                     :autogenerate="true"
                 />
             </div>
+            {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_PASSWORD, '', $user) !!}
             <div>
                 <x-inputs.password
                     name="password_confirmation"
@@ -149,6 +159,9 @@
                     :autogenerate="true"
                 />
             </div>
+            {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_CONFIRM_PASSWORD, '', $user) !!}
+
+            {{-- Roles & Display Name --}}
 
             @if($showRoles || $showDisplayName)
                 <div class="col-span-2">
@@ -170,6 +183,7 @@
                         :multiple="true"
                         :searchable="true" />
                 </div>
+                {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_ROLES, '', $user) !!}
                 @endif
 
                 @if($showDisplayName)
@@ -180,15 +194,11 @@
                         placeholder="{{ __('Enter Display Name') }}"
                         class="form-control">
                 </div>
+                {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_DISPLAY_NAME, '', $user) !!}
                 @endif
             @endif
 
-            {!! ld_apply_filters('after_username_field', '', $user) !!}
-
-            @if($isProfile)
-                {!! ld_apply_filters('profile_edit_fields', '', $user) !!}
-            @endif
-
+            {{-- Additional Information --}}
             @if($showAdditional)
                 <div class="col-span-2">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white pb-1 border-b border-gray-200 dark:border-gray-700">
@@ -201,6 +211,8 @@
                         placeholder="{{ __('Tell us about yourself...') }}"
                         class="form-control h-16">{{ old('bio', $userMeta['bio'] ?? '') }}</textarea>
                 </div>
+                {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_BIO, '', $user) !!}
+
                 @if(!empty($timezones))
                     <div>
                         <x-searchable-select
@@ -213,7 +225,9 @@
                             position="top"
                         />
                     </div>
+                    {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_TIMEZONE, '', $user) !!}
                 @endif
+
                 @if(!empty($locales))
                     <div>
                         <x-searchable-select
@@ -226,13 +240,8 @@
                             position="top"
                         />
                     </div>
+                    {!! Hook::applyFilters(UserFilterHook::USER_FORM_AFTER_LOCALE, '', $user) !!}
                 @endif
-            @endif
-
-            @if($isProfile)
-                <div class="col-span-2">
-                    {!! ld_apply_filters('profile_edit_after_fields', '', $user) !!}
-                </div>
             @endif
 
             <div class="col-span-2 flex mt-4">

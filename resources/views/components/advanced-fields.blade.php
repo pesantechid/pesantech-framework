@@ -1,7 +1,6 @@
 @props([
     'postMeta' => []
 ])
-
 <div class="rounded-md border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
      x-data="{ open: false }">
     <button type="button"
@@ -25,7 +24,7 @@
         <div class="p-5">
             @php
                 $metaJson = json_encode($postMeta, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-                $fieldTypes = ld_apply_filters('advanced_fields_types', [
+                $fieldTypes = Hook::applyFilters(CommonFilterHook::ADVANCED_FIELDS_TYPES, [
                     ['value' => 'input', 'label' => __('Text Input')],
                     ['value' => 'textarea', 'label' => __('Textarea')],
                     ['value' => 'number', 'label' => __('Number')],

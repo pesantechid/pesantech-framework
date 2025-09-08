@@ -1,9 +1,10 @@
 @props([
-    'label' => 'Actions',
+    'label' => __('Actions'),
     'showLabel' => true,
     'align' => 'left', // left, right
     'buttonClass' => '',
     'position' => 'bottom', // bottom, top
+    'icon' => 'lucide:more-horizontal'
 ])
 
 <div
@@ -54,7 +55,7 @@
         x-on:keydown.down.prevent="openedWithKeyboard = true; $nextTick(() => updatePosition())"
         x-bind:aria-expanded="isOpen || openedWithKeyboard"
     >
-        <iconify-icon icon="lucide:more-horizontal" width="20"></iconify-icon>
+        <iconify-icon icon="{{ $icon }}" width="20"></iconify-icon>
         @if($showLabel)
             <span class="hidden sm:inline">{{ $label }}</span>
         @endif

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\PostStatus;
 use App\Models\Post;
 use App\Models\Taxonomy;
 use App\Models\Term;
@@ -89,7 +90,7 @@ it('has posts relationship', function () {
         'title' => 'Test Post',
         'post_type' => 'post',
         'content' => 'Test content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => $user->id,
     ]);
     expect($term)->not->toBeNull();

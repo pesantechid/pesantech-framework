@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\Hooks\CommonFilterHook;
+use App\Support\Facades\Hook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -34,7 +36,7 @@ class RecaptchaService
         $isEnabled = in_array($page, $this->enabledPages);
 
         // Apply filter hook to allow modifications
-        return ld_apply_filters('recaptcha_is_enabled_for_page', $isEnabled, $page);
+        return Hook::applyFilters(CommonFilterHook::RECAPTCHA_IS_ENABLED_FOR_PAGE, $isEnabled, $page);
     }
 
     /**
@@ -57,13 +59,13 @@ class RecaptchaService
         }
 
         // Apply filter hook to allow custom verification logic
-        $preVerificationResult = ld_apply_filters('recaptcha_pre_verification', null, $request);
+        $preVerificationResult = Hook::applyFilters(CommonFilterHook::RECAPTCHA_PRE_VERIFICATION, null, $request);
         if ($preVerificationResult !== null && $preVerificationResult !== '') {
             return (bool) $preVerificationResult;
         }
 
         try {
-            $verifyUrl = ld_apply_filters('recaptcha_verify_url', 'https://www.google.com/recaptcha/api/siteverify');
+            $verifyUrl = Hook::applyFilters(CommonFilterHook::RECAPTCHA_VERIFY_URL, 'https://www.google.com/recaptcha/api/siteverify');
 
             $response = Http::timeout(10)->asForm()->post($verifyUrl, [
                 'secret' => $this->secretKey,
@@ -91,7 +93,7 @@ class RecaptchaService
             }
 
             // Apply filter hook to allow custom post-verification logic
-            $filteredResult = ld_apply_filters('recaptcha_post_verification', $isValid, $result);
+            $filteredResult = Hook::applyFilters(CommonFilterHook::RECAPTCHA_POST_VERIFICATION, $isValid, $result);
             return (bool) $filteredResult;
         } catch (\Exception $e) {
             \Log::error('Recaptcha verification failed', [
@@ -99,7 +101,7 @@ class RecaptchaService
                 'ip' => $request->ip(),
                 'action' => $action,
             ]);
-            $exceptionResult = ld_apply_filters('recaptcha_verification_exception', false, $e);
+            $exceptionResult = Hook::applyFilters(CommonFilterHook::RECAPTCHA_VERIFICATION_EXCEPTION, false, $e);
             return (bool) $exceptionResult;
         }
     }
@@ -132,7 +134,7 @@ class RecaptchaService
      */
     public static function getAvailablePages(): array
     {
-        return ld_apply_filters('recaptcha_available_pages', [
+        return Hook::applyFilters(CommonFilterHook::RECAPTCHA_AVAILABLE_PAGES, [
             'login' => __('Login'),
             'register' => __('Register'),
             'forgot_password' => __('Forgot Password'),

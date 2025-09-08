@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\PostStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -27,7 +28,7 @@ class PostFactory extends Factory
             'title' => fake()->sentence(),
             'content' => fake()->paragraph(),
             'excerpt' => fake()->sentence(10),
-            'status' => fake()->randomElement(['draft', 'publish']),
+            'status' => fake()->randomElement(collect(PostStatus::cases())->pluck('value')->toArray()),
             'post_type' => fake()->randomElement(['post', 'page']),
             'slug' => fake()->unique()->slug(),
             'user_id' => fake()->randomElement([1, 2]),

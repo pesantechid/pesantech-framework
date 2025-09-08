@@ -1,11 +1,5 @@
-@extends('backend.layouts.app')
-
-@section('title')
-    {{ $breadcrumbs['title'] }} | {{ config('app.name') }}
-@endsection
-
-@section('admin-content')
-    <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6" x-data="{
+<x-layouts.backend-layout :breadcrumbs="$breadcrumbs">
+    <div x-data="{
         selectedMedia: [],
         selectAll: false,
         bulkDeleteModalOpen: false,
@@ -24,9 +18,7 @@
             this.bulkDeleteModalOpen = true;
         }
     }" id="mediaManager">
-        <x-breadcrumbs :breadcrumbs="$breadcrumbs" />
-
-        {!! ld_apply_filters('media_after_breadcrumbs', '') !!}
+        {!! Hook::applyFilters(CommonFilterHook::MEDIA_AFTER_BREADCRUMBS, '') !!}
 
         @if ($errors->any())
             <div class="mb-6 p-4 border border-red-200 bg-red-50 rounded-md dark:border-red-800 dark:bg-red-900/20">
@@ -667,169 +659,169 @@
             <iconify-icon icon="lucide:x" class="text-2xl"></iconify-icon>
         </button>
     </div>
-@endsection
 
-@push('scripts')
-    <script>
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Show success message
-                if (window.showToast) {
-                    window.showToast('success', '{{ __('Success') }}', '{{ __('URL copied to clipboard') }}');
+    @push('scripts')
+        <script>
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    // Show success message
+                    if (window.showToast) {
+                        window.showToast('success', '{{ __('Success') }}', '{{ __('URL copied to clipboard') }}');
+                    }
+                });
+            }
+
+            function openImageModal(src, alt) {
+                const modal = document.getElementById('imageModal');
+                const img = document.getElementById('modalImage');
+                img.src = src;
+                img.alt = alt;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex', 'items-center', 'justify-center');
+            }
+
+            function closeImageModal() {
+                const modal = document.getElementById('imageModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'items-center', 'justify-center');
+            }
+
+            // Close modal on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeImageModal();
                 }
             });
-        }
 
-        function openImageModal(src, alt) {
-            const modal = document.getElementById('imageModal');
-            const img = document.getElementById('modalImage');
-            img.src = src;
-            img.alt = alt;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex', 'items-center', 'justify-center');
-        }
+            // Video Modal Functions
+            function openVideoModal(url, title) {
+                const modal = document.getElementById('videoModal');
+                const video = document.getElementById('modalVideo');
 
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex', 'items-center', 'justify-center');
-        }
+                // Set video source
+                video.src = url;
+                video.load(); // Reload video with new source
 
-        // Close modal on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeImageModal();
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.classList.add('flex', 'items-center', 'justify-center');
+
+                // Focus on video for keyboard controls
+                setTimeout(() => video.focus(), 100);
             }
-        });
 
-        // Video Modal Functions
-        function openVideoModal(url, title) {
-            const modal = document.getElementById('videoModal');
-            const video = document.getElementById('modalVideo');
+            function closeVideoModal() {
+                const modal = document.getElementById('videoModal');
+                const video = document.getElementById('modalVideo');
 
-            // Set video source
-            video.src = url;
-            video.load(); // Reload video with new source
+                // Pause and reset video
+                video.pause();
+                video.src = '';
 
-            // Show modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex', 'items-center', 'justify-center');
-
-            // Focus on video for keyboard controls
-            setTimeout(() => video.focus(), 100);
-        }
-
-        function closeVideoModal() {
-            const modal = document.getElementById('videoModal');
-            const video = document.getElementById('modalVideo');
-
-            // Pause and reset video
-            video.pause();
-            video.src = '';
-
-            // Hide modal
-            modal.classList.add('hidden');
-            modal.classList.remove('flex', 'items-center', 'justify-center');
-        }
-
-        // Audio Modal Functions
-        function openAudioModal(url, title, fileSize) {
-            const modal = document.getElementById('audioModal');
-            const audio = document.getElementById('modalAudio');
-            const titleElement = document.getElementById('modalAudioTitle');
-            const infoElement = document.getElementById('modalAudioInfo');
-
-            // Set audio source and title
-            audio.src = url;
-            audio.load(); // Reload audio with new source
-            titleElement.textContent = title || 'Audio File';
-
-            // Add audio info
-            infoElement.innerHTML = `
-                <div>File: ${title || 'Audio File'}</div>
-                ${fileSize ? `<div>Size: ${fileSize}</div>` : ''}
-                <div>Format: ${url.split('.').pop().toUpperCase()}</div>
-            `;
-
-            // Show modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex', 'items-center', 'justify-center');
-
-            // Focus on audio for keyboard controls
-            setTimeout(() => audio.focus(), 100);
-        }
-
-        function closeAudioModal() {
-            const modal = document.getElementById('audioModal');
-            const audio = document.getElementById('modalAudio');
-
-            // Pause and reset audio
-            audio.pause();
-            audio.src = '';
-
-            // Hide modal
-            modal.classList.add('hidden');
-            modal.classList.remove('flex', 'items-center', 'justify-center');
-        }
-
-        // Enhanced keyboard navigation for modals
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                // Close any open modal
-                closeImageModal();
-                closeVideoModal();
-                closeAudioModal();
-                closePdfModal();
+                // Hide modal
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'items-center', 'justify-center');
             }
-        });
 
-        // PDF Modal Functions
-        function openPdfModal(url, title) {
-            const modal = document.getElementById('pdfModal');
-            const iframe = document.getElementById('modalPdfViewer');
-            const titleElement = document.getElementById('modalPdfTitle');
-            const downloadLink = document.getElementById('pdfDownloadLink');
+            // Audio Modal Functions
+            function openAudioModal(url, title, fileSize) {
+                const modal = document.getElementById('audioModal');
+                const audio = document.getElementById('modalAudio');
+                const titleElement = document.getElementById('modalAudioTitle');
+                const infoElement = document.getElementById('modalAudioInfo');
 
-            // Set PDF source and title
-            iframe.src = url;
-            titleElement.textContent = title || 'PDF Document';
-            downloadLink.href = url;
-            downloadLink.download = title || 'document.pdf';
+                // Set audio source and title
+                audio.src = url;
+                audio.load(); // Reload audio with new source
+                titleElement.textContent = title || 'Audio File';
 
-            // Show modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex', 'items-center', 'justify-center');
-        }
+                // Add audio info
+                infoElement.innerHTML = `
+                    <div>File: ${title || 'Audio File'}</div>
+                    ${fileSize ? `<div>Size: ${fileSize}</div>` : ''}
+                    <div>Format: ${url.split('.').pop().toUpperCase()}</div>
+                `;
 
-        function closePdfModal() {
-            const modal = document.getElementById('pdfModal');
-            const iframe = document.getElementById('modalPdfViewer');
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.classList.add('flex', 'items-center', 'justify-center');
 
-            // Clear iframe source
-            iframe.src = '';
+                // Focus on audio for keyboard controls
+                setTimeout(() => audio.focus(), 100);
+            }
 
-            // Hide modal
-            modal.classList.add('hidden');
-            modal.classList.remove('flex', 'items-center', 'justify-center');
-        }
+            function closeAudioModal() {
+                const modal = document.getElementById('audioModal');
+                const audio = document.getElementById('modalAudio');
 
-        // Video/Audio/PDF preview button enhancements
-        function handleVideoPreview(event, url, title) {
-            event.preventDefault();
-            event.stopPropagation();
-            openVideoModal(url, title);
-        }
+                // Pause and reset audio
+                audio.pause();
+                audio.src = '';
 
-        function handleAudioPreview(event, url, title, fileSize) {
-            event.preventDefault();
-            event.stopPropagation();
-            openAudioModal(url, title, fileSize);
-        }
+                // Hide modal
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'items-center', 'justify-center');
+            }
 
-        function handlePdfPreview(event, url, title) {
-            event.preventDefault();
-            event.stopPropagation();
-            openPdfModal(url, title);
-        }
-    </script>
-@endpush
+            // Enhanced keyboard navigation for modals
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    // Close any open modal
+                    closeImageModal();
+                    closeVideoModal();
+                    closeAudioModal();
+                    closePdfModal();
+                }
+            });
+
+            // PDF Modal Functions
+            function openPdfModal(url, title) {
+                const modal = document.getElementById('pdfModal');
+                const iframe = document.getElementById('modalPdfViewer');
+                const titleElement = document.getElementById('modalPdfTitle');
+                const downloadLink = document.getElementById('pdfDownloadLink');
+
+                // Set PDF source and title
+                iframe.src = url;
+                titleElement.textContent = title || 'PDF Document';
+                downloadLink.href = url;
+                downloadLink.download = title || 'document.pdf';
+
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.classList.add('flex', 'items-center', 'justify-center');
+            }
+
+            function closePdfModal() {
+                const modal = document.getElementById('pdfModal');
+                const iframe = document.getElementById('modalPdfViewer');
+
+                // Clear iframe source
+                iframe.src = '';
+
+                // Hide modal
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'items-center', 'justify-center');
+            }
+
+            // Video/Audio/PDF preview button enhancements
+            function handleVideoPreview(event, url, title) {
+                event.preventDefault();
+                event.stopPropagation();
+                openVideoModal(url, title);
+            }
+
+            function handleAudioPreview(event, url, title, fileSize) {
+                event.preventDefault();
+                event.stopPropagation();
+                openAudioModal(url, title, fileSize);
+            }
+
+            function handlePdfPreview(event, url, title) {
+                event.preventDefault();
+                event.stopPropagation();
+                openPdfModal(url, title);
+            }
+        </script>
+    @endpush
+</x-layouts.backend-layout>

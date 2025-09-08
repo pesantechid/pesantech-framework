@@ -27,6 +27,7 @@ class ContentService
             'supports_thumbnail' => true,
             'supports_excerpt' => true,
             'supports_custom_fields' => true,
+            'supports_taxonomies' => true,
             'taxonomies' => [],
         ];
 
@@ -38,7 +39,7 @@ class ContentService
         }
 
         // Set taxonomies correctly.
-        if (isset($args['taxonomies'])) {
+        if (! empty($args['supports_taxonomies']) && isset($args['taxonomies'])) {
             if (is_string($args['taxonomies'])) {
                 $args['taxonomies'] = explode(',', $args['taxonomies']);
             }

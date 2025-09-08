@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use App\Support\Facades\Hook;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -64,9 +65,9 @@ class UserService
             $userData = $this->prepareUserDataWithAvatar($data, true);
             $user = new User($userData);
 
-            $user = $this->applyHooks($user, $request, 'user_store_before_save');
+            $user = $this->applyFilters($user, $request, 'user_store_before_save');
             $user->save();
-            $user = $this->applyHooks($user, $request, 'user_store_after_save');
+            $user = $this->applyFilters($user, $request, 'user_store_after_save');
 
             $this->handleUserMetadata($user, $data, 'create', $request);
             $this->handleUserRoles($user, $data);
@@ -81,9 +82,9 @@ class UserService
             $userData = $this->prepareUserDataWithAvatar($data, false, $user);
             $this->updateUserAttributes($user, $userData);
 
-            $user = $this->applyHooks($user, $request, 'user_update_before_save');
+            $user = $this->applyFilters($user, $request, 'user_update_before_save');
             $user->save();
-            $user = $this->applyHooks($user, $request, 'user_update_after_save');
+            $user = $this->applyFilters($user, $request, 'user_update_after_save');
 
             $this->handleUserMetadata($user, $data, 'update', $request);
             $this->handleUserRoles($user, $data, 'update');
@@ -130,13 +131,9 @@ class UserService
         }
     }
 
-    private function applyHooks(User $user, $request, string $hookName): User
+    private function applyFilters(User $user, $request, string $hookName): User
     {
-        if ($request && function_exists('ld_apply_filters')) {
-            return ld_apply_filters($hookName, $user, $request) ?: $user;
-        }
-
-        return $user;
+        return Hook::applyFilters($hookName, $user, $request) ?: $user;
     }
 
     private function syncUserRoles(User $user, array $data): void
@@ -261,5 +258,28 @@ class UserService
             ['user_id', 'meta_key'], // Unique columns
             ['meta_value', 'type', 'updated_at'] // Columns to update
         );
+    }
+
+    /**
+     * Bulk delete users by IDs, skipping superadmin and current user.
+     * Returns the number of users deleted.
+     */
+    public function bulkDeleteUsers(array $ids, ?int $currentUserId = null): int
+    {
+        $users = User::whereIn('id', $ids)->get();
+        $deletedCount = 0;
+
+        foreach ($users as $user) {
+            if ($user->hasRole('superadmin')) {
+                continue;
+            }
+            if ($currentUserId && $user->id == $currentUserId) {
+                continue;
+            }
+            $user->delete();
+            $deletedCount++;
+        }
+
+        return $deletedCount;
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+
+use App\Http\Controllers\Backend\SettingController;
 use App\Services\RecaptchaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -113,7 +115,7 @@ test('get script tag returns v3 script', function () {
     $this->assertStringContainsString('https://www.google.com/recaptcha/api.js?render=test-site-key', $scriptTag);
 });
 test('settings controller rejects invalid recaptcha enabled pages', function () {
-    $controller = app(\App\Http\Controllers\Backend\SettingsController::class);
+    $controller = app(SettingController::class);
     $request = Request::create('/', 'POST', [
         'recaptcha_enabled_pages' => ['login', 'invalid_page', 'register'],
     ]);

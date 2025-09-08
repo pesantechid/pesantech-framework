@@ -25,19 +25,19 @@
     class="transition-all duration-300 ease-in-out px-4"
 >
     @foreach($menuGroups as $groupName => $groupItems)
-        {!! ld_apply_filters('sidebar_menu_group_before_' . Str::slug($groupName), '') !!}
+        {!! Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_GROUP_BEFORE->value . Str::slug($groupName), '') !!}
         <div>
-            {!! ld_apply_filters('sidebar_menu_group_heading_before_' . Str::slug($groupName), '') !!}
+            {!! Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_GROUP_HEADING_BEFORE->value . Str::slug($groupName), '') !!}
             <h3 class="menu-group-heading mb-4 text-xs uppercase leading-[20px] text-gray-500 font-medium dark:text-gray-300 px-5">
                 {{ __($groupName) }}
             </h3>
-            {!! ld_apply_filters('sidebar_menu_group_heading_after_' . Str::slug($groupName), '') !!}
+            {!! Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_GROUP_HEADING_AFTER->value . Str::slug($groupName), '') !!}
             <ul class="flex flex-col mb-6 space-y-1">
-                {!! ld_apply_filters('sidebar_menu_before_all_' . Str::slug($groupName), '') !!}
+                {!! Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_BEFORE_ALL->value . Str::slug($groupName), '') !!}
                 {!! $menuService->render($groupItems) !!}
-                {!! ld_apply_filters('sidebar_menu_after_all_' . Str::slug($groupName), '') !!}
+                {!! Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_AFTER_ALL->value . Str::slug($groupName), '') !!}
             </ul>
         </div>
-        {!! ld_apply_filters('sidebar_menu_group_after_' . Str::slug($groupName), '') !!}
+        {!! Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_GROUP_AFTER->value . Str::slug($groupName), '') !!}
     @endforeach
 </nav>

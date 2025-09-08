@@ -1,4 +1,3 @@
-<!-- filepath: g:\Development\Maniruzzaman Akash\laradashboard\resources\views\backend\pages\dashboard\user-pie-chart.blade.php -->
 <div class="w-full bg-white border border-gray-200 dark:border-gray-700 rounded-md shadow-sm dark:bg-gray-800 p-4 ">
     <div class="flex justify-between">
         <div class="flex justify-center items-center">

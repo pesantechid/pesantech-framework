@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Module;
 
+use App\Enums\Hooks\ModuleFilterHook;
 use App\Http\Requests\FormRequest;
+use App\Support\Facades\Hook;
 
 class StoreModuleRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class StoreModuleRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ld_apply_filters('module.store.validation.rules', [
+        return Hook::applyFilters(ModuleFilterHook::MODULE_STORE_VALIDATION_RULES, [
             'module' => 'required|file|mimes:zip',
         ]);
     }
@@ -34,8 +36,8 @@ class StoreModuleRequest extends FormRequest
      */
     public function messages(): array
     {
-        return ld_apply_filters(
-            'module.store.validation.messages',
+        return Hook::applyFilters(
+            ModuleFilterHook::MODULE_STORE_VALIDATION_MESSAGES,
             [
                 'module.required' => __('The module file is required.'),
                 'module.file' => __('The module must be a valid file.'),

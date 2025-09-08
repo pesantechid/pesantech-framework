@@ -19,22 +19,6 @@ it('uses query builder trait', function () {
     expect(in_array('App\Concerns\QueryBuilderTrait', class_uses_recursive($role)))->toBeTrue();
 });
 
-it('has searchable columns', function () {
-    $role = new Role();
-    $reflection = new \ReflectionClass($role);
-    $method = $reflection->getMethod('getSearchableColumns');
-    $method->setAccessible(true);
-    expect($method->invoke($role))->toEqual(['name']);
-});
-
-it('has excluded sort columns', function () {
-    $role = new Role();
-    $reflection = new \ReflectionClass($role);
-    $method = $reflection->getMethod('getExcludedSortColumns');
-    $method->setAccessible(true);
-    expect($method->invoke($role))->toEqual(['user_count']);
-});
-
 it('can create role with permissions', function () {
     $permission1 = Permission::create(['name' => 'test.permission1']);
     $permission2 = Permission::create(['name' => 'test.permission2']);

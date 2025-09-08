@@ -408,21 +408,16 @@ test('role creation with permissions', function () {
 test('role update with permissions', function () {
     $this->authenticateAdmin();
 
-    if (class_exists(Role::class) && class_exists(Permission::class)) {
-        $role = Role::create(['name' => 'test-role', 'guard_name' => 'web']);
-        createPermissions();
-        $permissionIds = Permission::limit(3)->pluck('name')->toArray();
+    $role = Role::create(['name' => 'test-role', 'guard_name' => 'web']);
+    createPermissions();
+    $permissionIds = Permission::limit(3)->pluck('name')->toArray();
 
-        $response = $this->putJson("/api/v1/roles/{$role->id}", [
-            'name' => 'test-role',
-            'display_name' => 'Updated Test Role',
-            'permissions' => $permissionIds,
-        ]);
+    $response = $this->putJson("/api/v1/roles/{$role->id}", [
+        'name' => 'test-role-2',
+        'permissions' => $permissionIds,
+    ]);
 
-        $response->assertStatus(200);
-    } else {
-        $this->markTestSkipped('Role/Permission system not implemented');
-    }
+    $response->assertStatus(200);
 });
 
 test('role management handles edge case inputs', function () {

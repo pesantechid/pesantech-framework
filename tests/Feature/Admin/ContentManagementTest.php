@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\PostStatus;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Post;
 use App\Models\Term;
@@ -149,7 +150,7 @@ test('admin can create post', function () {
             'slug' => 'test-post-title',
             'content' => 'Test post content',
             'excerpt' => 'Test excerpt',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
             'taxonomy_category' => [$category->id],
             'taxonomy_tag' => [$tag->id],
             '_token' => csrf_token(),
@@ -161,7 +162,7 @@ test('admin can create post', function () {
         'slug' => 'test-post-title',
         'content' => 'Test post content',
     'post_type' => test()->postType,
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
     ]);
 
     $post = Post::where('title', 'Test Post Title')->first();
@@ -178,7 +179,7 @@ test('admin can update post', function () {
         'slug' => 'original-title',
         'content' => 'Original content',
         'post_type' => test()->postType,
-        'status' => 'draft',
+        'status' => PostStatus::DRAFT->value,
         'user_id' => test()->admin->id,
     ]);
 
@@ -188,7 +189,7 @@ test('admin can update post', function () {
             'slug' => 'updated-title',
             'content' => 'Updated content',
             'excerpt' => 'Updated excerpt',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
             '_token' => csrf_token(),
         ]);
 
@@ -198,7 +199,7 @@ test('admin can update post', function () {
         'title' => 'Updated Title',
         'slug' => 'updated-title',
         'content' => 'Updated content',
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
     ]);
 });
 
@@ -208,7 +209,7 @@ test('admin can delete post', function () {
         'slug' => 'post-to-delete',
         'content' => 'Content to delete',
         'post_type' => test()->postType,
-        'status' => 'publish',
+        'status' => PostStatus::PUBLISHED->value,
         'user_id' => test()->admin->id,
     ]);
 
@@ -300,7 +301,7 @@ test('user without permission cannot manage content', function () {
         ->post("/admin/posts/" . test()->postType, [
             'title' => 'Unauthorized Post',
             'content' => 'Unauthorized content',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
             '_token' => csrf_token(),
         ])
         ->assertStatus(403);

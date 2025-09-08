@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\TermController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Backend\Api\TermsController;
+use App\Http\Controllers\Backend\Api\TermController as BackendTermController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -109,7 +109,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 // Admin API routes (for backward compatibility with existing web-based API calls)
 Route::middleware(['auth', 'web'])->prefix('admin')->name('admin.api.')->group(function () {
     // Terms API (existing)
-    Route::post('/terms/{taxonomy}', [TermsController::class, 'store'])->name('terms.store');
-    Route::put('/terms/{taxonomy}/{id}', [TermsController::class, 'update'])->name('terms.update');
-    Route::delete('/terms/{taxonomy}/{id}', [TermsController::class, 'destroy'])->name('terms.destroy');
+    Route::post('/terms/{taxonomy}', [BackendTermController::class, 'store'])->name('terms.store');
+    Route::put('/terms/{taxonomy}/{id}', [BackendTermController::class, 'update'])->name('terms.update');
+    Route::delete('/terms/{taxonomy}/{id}', [BackendTermController::class, 'destroy'])->name('terms.destroy');
 });

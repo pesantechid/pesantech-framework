@@ -15,7 +15,7 @@
       </p>
     </div>
     <div>
-      <form action="{{ route('admin.login.submit') }}" method="POST">
+      <form action="{{ route('admin.login.submit') }}" method="POST" x-data="{ loading: false }" @submit="loading = true">
         @csrf
         <div class="space-y-5">
           <x-messages />
@@ -59,9 +59,9 @@
           <x-recaptcha page="login" />
 
           <div>
-            <button type="submit" class="btn-primary w-full ">
-              {{ __('Sign In') }}
-              <iconify-icon icon="lucide:log-in" class="ml-2"></iconify-icon>
+            <button type="submit" class="btn-primary w-full" :disabled="loading">
+              <span x-text="loading ? '' : '{{ __('Sign In') }}'">{{ __('Sign In') }}</span>
+              <iconify-icon :icon="loading ? 'lucide:loader-circle' : 'lucide:log-in'" :class="{ 'animate-spin': loading, 'ml-2': !loading }" />
             </button>
           </div>
           @if (config('app.demo_mode', false))
@@ -96,9 +96,11 @@
                 type="button"
                 id="fill-demo-credentials"
                 class="!text-xs btn-default"
+                :disabled="loading"
+                @click="loading = true"
               >
-                {{ __('Login Now') }}
-                <iconify-icon icon="lucide:log-in" class="ml-1"></iconify-icon>
+                <span x-text="loading ? '' : '{{ __('Login Now') }}'">{{ __('Login Now') }}</span>
+                <iconify-icon :icon="loading ? 'lucide:loader-circle' : 'lucide:log-in'" :class="{ 'animate-spin': loading, 'ml-2': !loading }" />
               </button>
             </div>
           </div>

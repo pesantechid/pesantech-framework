@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Term;
 
+use App\Enums\Hooks\TermFilterHook;
 use App\Http\Requests\FormRequest;
+use App\Support\Facades\Hook;
 use App\Services\Content\ContentService;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -86,6 +88,6 @@ class StoreTermRequest extends FormRequest
             ];
         }
 
-        return ld_apply_filters('term.store.validation.rules', $rules, $taxonomyName);
+        return Hook::applyFilters(TermFilterHook::TERM_STORE_VALIDATION_RULES, $rules, $taxonomyName);
     }
 }

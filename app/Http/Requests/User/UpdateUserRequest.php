@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User;
 
+use App\Enums\Hooks\UserFilterHook;
 use App\Http\Requests\FormRequest;
+use App\Support\Facades\Hook;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -27,7 +29,7 @@ class UpdateUserRequest extends FormRequest
         // Get user ID from the request parameters
         $userId = request()->route('user');
 
-        return ld_apply_filters('user.update.validation.rules', [
+        return Hook::applyFilters(UserFilterHook::USER_UPDATE_VALIDATION_RULES, [
             /** @example "Jane" */
             'first_name' => 'required|max:50',
 

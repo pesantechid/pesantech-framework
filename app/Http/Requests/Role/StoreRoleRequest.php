@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Role;
 
+use App\Enums\Hooks\RoleFilterHook;
 use App\Http\Requests\FormRequest;
+use App\Support\Facades\Hook;
 
 class StoreRoleRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class StoreRoleRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ld_apply_filters('role.store.validation.rules', [
+        return Hook::applyFilters(RoleFilterHook::ROLE_STORE_VALIDATION_RULES, [
             /** @example "Content Writer" */
             'name' => 'required|max:100|unique:roles,name',
 

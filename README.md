@@ -49,6 +49,15 @@ password - 12345678
 
 ## 📝 Changelog
 
+**[v2.3.0] - 2025-09-07**
+
+-   **Feat:** Datatable integration for Users, Roles, Permissions, Posts, Categories, Tags.
+-   **Feat:** Several new components.
+-   **Feat:** Observer added for models.
+-   **Feat:** Introduce hooks with more managed/documented way.
+-   **Enhancement:** Updated code structure, new components, improved code quality.
+-   **Fix:** Several small UI bugs.
+
 **[v2.2.0] - 2025-08-17**
 
 -   **Feat:** Media library manager.

@@ -1,4 +1,4 @@
-@props(['title', 'description', 'path', 'include', 'language'])
+@props(['title', 'description', 'path', 'include', 'language', 'hideCodeButton' => false])
 
 <div class="px-4 py-5 bg-white dark:bg-gray-800 rounded-md shadow-sm">
     <div x-data="{ showCode: false }">
@@ -12,6 +12,7 @@
                 @endif
             </div>
             <div>
+                @if(!$hideCodeButton)
                 <button type="button"
                     class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                     @click="showCode = !showCode">
@@ -24,6 +25,7 @@
                         {{ __('Preview') }}
                     </span>
                 </button>
+                @endif
             </div>
         </div>
         <div x-show="showCode">

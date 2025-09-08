@@ -36,6 +36,7 @@
         "tormjens/eventy": "^0.8.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.16",
         "beyondcode/laravel-dump-server": "^2.1",
         "brianium/paratest": "*",
         "fakerphp/faker": "^1.24",
@@ -126,6 +127,12 @@
             "./vendor/bin/phpstan analyse --memory-limit=5G"
         ],
         "pest": [
+            "./vendor/bin/pest --parallel --testsuite=Unit,Feature,Smoke,Browser"
+        ],
+        "pest:modules": [
+            "./vendor/bin/pest --parallel --testsuite=Modules"
+        ],
+        "pest:all": [
             "./vendor/bin/pest --parallel"
         ],
         "type-check": [
@@ -135,6 +142,18 @@
             "@pint",
             "@phpstan",
             "@pest",
+            "@type-check"
+        ],
+        "test:modules": [
+            "@pint",
+            "@phpstan",
+            "@pest:modules",
+            "@type-check"
+        ],
+        "test:all": [
+            "@pint",
+            "@phpstan",
+            "@pest:all",
             "@type-check"
         ],
         "fresh:seed": [

@@ -49,5 +49,5 @@
 @endif
 
 @if(isset($item->id))
-    {!! ld_apply_filters('sidebar_menu_item_after_' . strtolower($item->id), '') !!}
+    {!! Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_ITEM_AFTER->value . strtolower($item->id), '') !!}
 @endif

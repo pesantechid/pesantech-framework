@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\PostStatus;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -63,7 +64,7 @@ test('authenticated user can create post', function () {
         $postData = [
             'title' => 'Test Post',
             'content' => 'This is a test post content',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
             'post_type' => 'page',
         ];
 
@@ -184,7 +185,7 @@ test('authenticated user can update post', function () {
         $updateData = [
             'title' => 'Updated Post Title',
             'content' => 'Updated content',
-            'status' => 'draft',
+            'status' => PostStatus::DRAFT->value,
         ];
 
         $response = $this->putJson("/api/v1/posts/page/{$post->id}", $updateData);
@@ -194,14 +195,14 @@ test('authenticated user can update post', function () {
                 'data' => [
                     'id' => $post->id,
                     'title' => 'Updated Post Title',
-                    'status' => 'draft',
+                    'status' => PostStatus::DRAFT->value,
                 ],
             ]);
 
         $this->assertDatabaseHas('posts', [
             'id' => $post->id,
             'title' => 'Updated Post Title',
-            'status' => 'draft',
+            'status' => PostStatus::DRAFT->value,
         ]);
     } else {
         $this->markTestSkipped('Post system not implemented');
@@ -270,7 +271,7 @@ test('post creation handles different post types', function () {
             $response = $this->postJson("/api/v1/posts/{$postType}", [
                 'title' => "Test {$postType}",
                 'content' => "Content for {$postType}",
-                'status' => 'publish',
+                'status' => PostStatus::PUBLISHED->value,
                 'post_type' => $postType,
             ]);
 
@@ -293,7 +294,7 @@ test('post creation with meta data', function () {
         $postData = [
             'title' => 'Post with Meta',
             'content' => 'Content with meta data',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
             'post_type' => 'page',
             'meta' => [
                 'featured_image' => 'image.jpg',
@@ -317,7 +318,7 @@ test('post creation with author', function () {
         $response = $this->postJson('/api/v1/posts/page', [
             'title' => 'Post with Author',
             'content' => 'Content',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
             'post_type' => 'page',
         ]);
 
@@ -358,7 +359,7 @@ test('post endpoints filter by status', function () {
 
     if (class_exists(Post::class)) {
         Post::factory(2)->create(['post_type' => 'page', 'status' => 'published']);
-        Post::factory(3)->create(['post_type' => 'page', 'status' => 'draft']);
+        Post::factory(3)->create(['post_type' => 'page', 'status' => PostStatus::DRAFT->value]);
 
         $response = $this->getJson('/api/v1/posts/page?status=published');
 
@@ -466,7 +467,7 @@ test('post creation auto generates slug from title', function () {
         $response = $this->postJson('/api/v1/posts/page', [
             'title' => 'This Should Generate Slug',
             'content' => 'Content',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
             'post_type' => 'page',
         ]);
 
@@ -491,7 +492,7 @@ test('post update preserves created date', function () {
         $response = $this->putJson("/api/v1/posts/page/{$post->id}", [
             'title' => 'Updated Title',
             'content' => 'Updated Content',
-            'status' => 'publish',
+            'status' => PostStatus::PUBLISHED->value,
         ]);
 
         $response->assertStatus(200);

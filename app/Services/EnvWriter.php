@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enums\ActionType;
 use App\Concerns\HasActionLogTrait;
+use App\Enums\ActionType;
+use App\Enums\Hooks\CommonFilterHook;
+use App\Support\Facades\Hook;
 
 class EnvWriter
 {
@@ -69,7 +71,7 @@ class EnvWriter
 
     public function getAvailableKeys()
     {
-        return ld_apply_filters('available_keys', [
+        return Hook::applyFilters(CommonFilterHook::AVAILABLE_KEYS, [
             'app_name' => 'APP_NAME',
         ]);
     }

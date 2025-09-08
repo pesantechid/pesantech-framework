@@ -6,6 +6,9 @@ use Illuminate\Support\Str;
 
 class PostType
 {
+    public const POST = 'post';
+    public const PAGE = 'page';
+
     public string $name = '';
 
     public string $label = '';
@@ -33,6 +36,7 @@ class PostType
     public bool $supports_excerpt = true;
 
     public bool $supports_custom_fields = true;
+    public bool $supports_taxonomies = true;
 
     public array $taxonomies = [];
 
@@ -87,6 +91,7 @@ class PostType
             'supports_thumbnail' => $this->supports_thumbnail,
             'supports_excerpt' => $this->supports_excerpt,
             'supports_custom_fields' => $this->supports_custom_fields,
+            'supports_taxonomies' => $this->supports_taxonomies,
             'taxonomies' => $this->taxonomies,
         ];
     }

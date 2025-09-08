@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\MenuService;
 
+use App\Enums\Hooks\AdminFilterHook;
 use App\Services\Content\ContentService;
+use App\Support\Facades\Hook;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -233,7 +235,7 @@ class AdminMenuService
             ',
         ], __('More'));
 
-        $this->groups = ld_apply_filters('admin_menu_groups_before_sorting', $this->groups);
+        $this->groups = Hook::applyFilters(AdminFilterHook::ADMIN_MENU_GROUPS_BEFORE_SORTING, $this->groups);
 
         $this->sortMenuItemsByPriority();
 
@@ -347,7 +349,7 @@ class AdminMenuService
             });
 
             // Apply filters that might add/modify menu items.
-            $filteredItems = ld_apply_filters('sidebar_menu_' . strtolower($group), $filteredItems);
+            $filteredItems = Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU->value . strtolower((string) $group), $filteredItems);
 
             // Only add the group if it has items after filtering.
             if (! empty($filteredItems)) {
@@ -380,13 +382,13 @@ class AdminMenuService
         $html = '';
         foreach ($groupItems as $menuItem) {
             $filterKey = $menuItem->id ?? Str::slug($menuItem->label) ?: '';
-            $html .= ld_apply_filters('sidebar_menu_before_' . $filterKey, '');
+            $html .= Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_BEFORE->value . $filterKey, '');
 
             $html .= view('backend.layouts.partials.menu-item', [
                 'item' => $menuItem,
             ])->render();
 
-            $html .= ld_apply_filters('sidebar_menu_after_' . $filterKey, '');
+            $html .= Hook::applyFilters(AdminFilterHook::SIDEBAR_MENU_AFTER->value . $filterKey, '');
         }
 
         return $html;

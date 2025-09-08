@@ -28,7 +28,7 @@ class PostController extends ApiController
      */
     #[QueryParameter('per_page', description: 'Number of posts per page.', type: 'int', default: 10, example: 20)]
     #[QueryParameter('search', description: 'Search term for filtering posts by title, excerpt, or content.', type: 'string', example: 'Laravel')]
-    #[QueryParameter('status', description: 'Filter posts by status.', type: 'string', example: 'publish')]
+    #[QueryParameter('status', description: 'Filter posts by status.', type: 'string', example: 'published')]
     #[QueryParameter('author', description: 'Filter posts by author ID.', type: 'int', example: 1)]
     #[QueryParameter('term', description: 'Filter posts by term ID (category/tag).', type: 'int', example: 5)]
     #[QueryParameter('category', description: 'Filter posts by category ID.', type: 'int', example: 3)]

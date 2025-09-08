@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User;
 
+use App\Enums\Hooks\UserFilterHook;
 use App\Http\Requests\FormRequest;
+use App\Support\Facades\Hook;
 
 class StoreUserRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ld_apply_filters('user.store.validation.rules', [
+        return Hook::applyFilters(UserFilterHook::USER_STORE_VALIDATION_RULES, [
             /** @example "John" */
             'first_name' => 'required|max:50',
 

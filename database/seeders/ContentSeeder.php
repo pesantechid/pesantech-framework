@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\Term;
 use App\Services\Content\ContentService;
 use App\Concerns\HasActionLogTrait;
+use App\Enums\PostStatus;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -245,7 +246,7 @@ class ContentSeeder extends Seeder
                 'title' => 'Welcome to Our Blog',
                 'content' => '<p>This is the first post on our new blog. We\'re excited to share our thoughts with you!</p><p>Stay tuned for more updates.</p>',
                 'excerpt' => 'Welcome to our new blog! We\'re excited to share our thoughts with you.',
-                'status' => 'publish',
+                'status' => PostStatus::PUBLISHED->value,
                 'categories' => ['Uncategorized'],
                 'tags' => [],
             ],
@@ -309,7 +310,7 @@ class ContentSeeder extends Seeder
                 'id' => 2,
                 'title' => 'Sample Page',
                 'content' => '<p>This is a sample page created to demonstrate the page functionality.</p><p>Feel free to edit this content in the admin panel.</p>',
-                'status' => 'publish',
+                'status' => PostStatus::PUBLISHED->value,
             ],
         ];
 

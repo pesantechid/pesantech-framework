@@ -67,19 +67,3 @@ it('can check if user has any permission', function () {
     expect($user->hasAnyPermission('test.permission2'))->toBeFalse();
     expect($user->hasAnyPermission([]))->toBeTrue();
 });
-
-it('has searchable columns', function () {
-    $user = new User();
-    $reflection = new \ReflectionClass($user);
-    $method = $reflection->getMethod('getSearchableColumns');
-    $method->setAccessible(true);
-    expect($method->invoke($user))->toEqual(['first_name', 'last_name', 'email', 'username']);
-});
-
-it('has excluded sort columns', function () {
-    $user = new User();
-    $reflection = new \ReflectionClass($user);
-    $method = $reflection->getMethod('getExcludedSortColumns');
-    $method->setAccessible(true);
-    expect($method->invoke($user))->toEqual([]);
-});

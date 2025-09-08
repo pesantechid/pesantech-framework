@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\Enums\ActionType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ActionLog extends Model
 {
@@ -12,6 +16,13 @@ class ActionLog extends Model
         'title',
         'data',
     ];
+
+    public static function getActionTypes(): array
+    {
+        return collect(ActionType::cases())
+            ->mapWithKeys(fn ($case) => [$case->value => Str::of($case->name)->title()])
+            ->toArray();
+    }
 
     /**
      * Get the user that performed the action.

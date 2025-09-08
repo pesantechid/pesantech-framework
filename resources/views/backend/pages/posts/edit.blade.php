@@ -1,30 +1,32 @@
-@extends('backend.layouts.app')
+<x-layouts.backend-layout :breadcrumbs="$breadcrumbs">
+    {!! Hook::applyFilters(PostFilterHook::POSTS_EDIT_AFTER_BREADCRUMBS, '', $postType) !!}
 
-@section('title')
-    {{ $breadcrumbs['title'] }} | {{ config('app.name') }}
-@endsection
+    <x-card>
+        <form
+            action="{{ route('admin.posts.update', [$postType, $post->id]) }}"
+            method="POST"
+            class="space-y-6"
+            enctype="multipart/form-data"
+            data-prevent-unsaved-changes
+        >
+            @csrf
+            @method('PUT')
 
-@section('admin-content')
-<div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-    <x-breadcrumbs :breadcrumbs="$breadcrumbs" />
+            @include('backend.pages.posts.partials.form', [
+                'post' => $post,
+                'selectedTerms' => $selectedTerms ?? [],
+                'postType' => $postType,
+                'postTypeModel' => $postTypeModel,
+                'taxonomies' => $taxonomies ?? [],
+                'parentPosts' => $parentPosts ?? [],
+                'mode' => 'edit',
+            ])
+        </form>
+    </x-card>
 
-    {!! ld_apply_filters('posts_edit_after_breadcrumbs', '', $postType) !!}
+    {!! Hook::applyFilters(PostFilterHook::AFTER_POST_FORM, '', $postType) !!}
 
-    <form
-        action="{{ route('admin.posts.update', [$postType, $post->id]) }}"
-        method="POST"
-        enctype="multipart/form-data"
-        data-prevent-unsaved-changes
-    >
-        @csrf
-        @method('PUT')
-        @include('backend.pages.posts.partials.form')
-    </form>
-
-    {!! ld_apply_filters('after_post_form', '') !!}
-</div>
-@endsection
-
-@push('scripts')
-<x-quill-editor :editor-id="'content'" height="200px" maxHeight="-1" />
-@endpush
+    @push('scripts')
+        <x-quill-editor :editor-id="'content'" height="200px" maxHeight="-1" />
+    @endpush
+</x-layouts.backend-layout>

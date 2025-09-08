@@ -7,7 +7,7 @@
            $activeTab = request('tab', 'general');
         @endphp
         @foreach ($tabs as $key => $tab)
-            {!! ld_apply_filters('settings_tab_menu_before_' . $key, '') !!}
+            {!! Hook::applyFilters(SettingFilterHook::SETTINGS_TAB_MENU_BEFORE->value . $key, '') !!}
             <li class="me-2" role="presentation">
                 <button
                     class="inline-block p-4 border-b-2 rounded-t-lg
@@ -19,13 +19,13 @@
                     {{ $tab['title'] }}
                 </button>
             </li>
-            {!! ld_apply_filters('settings_tab_menu_after_' . $key, '') !!}
+            {!! Hook::applyFilters(SettingFilterHook::SETTINGS_TAB_MENU_AFTER->value . $key, '') !!}
         @endforeach
     </ul>
 </div>
 <div id="default-styled-tab-content">
     @foreach ($tabs as $key => $tab)
-        {!! ld_apply_filters('settings_tab_content_before_' . $key, '') !!}
+        {!! Hook::applyFilters(SettingFilterHook::SETTINGS_TAB_CONTENT_BEFORE->value . $key, '') !!}
         <div class="hidden rounded-md dark:bg-gray-800 mb-3" id="{{ $key }}" role="tabpanel"
             aria-labelledby="{{ $key }}-tab">
             @if (isset($tab['view']))
@@ -34,6 +34,6 @@
                 {!! $tab['content'] !!}
             @endif
         </div>
-        {!! ld_apply_filters('settings_tab_content_after_' . $key, '') !!}
+        {!! Hook::applyFilters(SettingFilterHook::SETTINGS_TAB_CONTENT_AFTER->value . $key, '') !!}
     @endforeach
 </div>

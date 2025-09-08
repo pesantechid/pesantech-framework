@@ -27,7 +27,7 @@
 
     @include('backend.layouts.partials.integration-scripts')
 
-    @php echo ld_apply_filters('admin_head', ''); @endphp
+    {!! Hook::applyFilters(AdminFilterHook::ADMIN_HEAD, '') !!}
 </head>
 
 <body x-data="{
@@ -76,7 +76,7 @@ x-init="
 
     <x-toast-notifications />
 
-    {!! ld_apply_filters('admin_footer_before', '') !!}
+    {!! Hook::applyFilters(AdminFilterHook::ADMIN_FOOTER_BEFORE, '') !!}
 
     @stack('scripts')
 
@@ -87,6 +87,7 @@ x-init="
     @endif
 
     @livewireScriptConfig
-    {!! ld_apply_filters('admin_footer_after', '') !!}
+
+    {!! Hook::applyFilters(AdminFilterHook::ADMIN_FOOTER_AFTER, '') !!}
 </body>
 </html>

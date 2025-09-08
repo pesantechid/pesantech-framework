@@ -4,7 +4,7 @@
     'description' => '',
     'position' => 'top', // top, bottom, left, right
     'width' => '',
-    'arrowAlign' => 'center', // left, center, right
+    'arrowAlign' => 'center', // left, center, right,
 ])
 
 @php
@@ -21,24 +21,20 @@ $arrowAlignClass = [
     'center' => 'left-1/2 -translate-x-1/2',
     'right' => 'right-4',
 ][$arrowAlign] ?? 'left-1/2 -translate-x-1/2';
+
+$tooltipBg = 'bg-gray-900 text-white dark:bg-gray-700 dark:text-gray-100';
 @endphp
 
 <div
     x-data="{
         open: false,
-        arrowVisible: false,
-        show() {
-            this.open = true;
-            this.arrowVisible = true;
-        },
-        hide() {
-            this.arrowVisible = false;
-            setTimeout(() => { this.open = false }, 120);
-        }
+        show() { this.open = true },
+        hide() { this.open = false }
     }"
     class="relative {{ !$width ? 'w-fit' : '' }}"
     style="{{ $width ? "width: {$width};" : '' }}"
 >
+    <!-- Trigger -->
     <div
         @mouseenter="show()"
         @mouseleave="hide()"
@@ -51,29 +47,35 @@ $arrowAlignClass = [
         {{ $slot }}
     </div>
 
+    <!-- Tooltip -->
     <div
         id="{{ $id }}"
         x-show="open"
-        x-transition.opacity
-        class="{{ $positionClass }} absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-md shadow-xs opacity-0 invisible tooltip dark:bg-gray-700 text-center"
+        x-transition.opacity.duration.250ms
+        class="absolute z-20 px-3 py-2 text-sm rounded-md shadow-md opacity-0 invisible transition-all duration-250 {{ $tooltipBg }} {{ $positionClass }} text-center"
         :class="{ 'opacity-100 visible': open, 'opacity-0 invisible': !open }"
         role="tooltip"
-        style="min-width: 150px;"
+        style="min-width: 160px;"
     >
         @if($title)
-            <span class="text-sm font-medium text-white">{{ $title }}</span>
+            <span class="block text-sm">{{ $title }}</span>
         @endif
 
         @if($description)
-            <p class="text-balance text-white/90">{{ $description }}</p>
+            <p class="text-xs opacity-90">{{ $description }}</p>
         @endif
 
+        <!-- Arrow -->
         <div
-            x-show="arrowVisible"
-            x-transition.opacity
-            class="tooltip-arrow transition-opacity duration-100 absolute {{ $arrowAlignClass }}"
-            :class="{ 'opacity-100 visible': arrowVisible, 'opacity-0 invisible': !arrowVisible }"
-            data-popper-arrow
-        ></div>
+            x-show="open"
+            x-transition.opacity.duration.150ms
+            class="absolute w-2.5 h-2.5 rotate-45 {{ $tooltipBg }} {{ $arrowAlignClass }}"
+            @class([
+                'top-full -mt-1' => $position === 'top',
+                'bottom-full -mb-1' => $position === 'bottom',
+                'left-full -ml-1 top-1/2 -translate-y-1/2' => $position === 'left',
+                'right-full -mr-1 top-1/2 -translate-y-1/2' => $position === 'right',
+            ])>
+        </div>
     </div>
 </div>

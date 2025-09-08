@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Post;
 
+use App\Enums\Hooks\PostFilterHook;
+use App\Enums\PostStatus;
 use App\Http\Requests\FormRequest;
+use App\Support\Facades\Hook;
 use Illuminate\Support\Str;
 
 class UpdatePostRequest extends FormRequest
@@ -45,14 +48,15 @@ class UpdatePostRequest extends FormRequest
      */
     public function rules(): array
     {
-        $postId = $this->route('id');
+        $postId = $this->post;
+        $postStatuses = implode(',', array_map(fn ($status) => $status->value, PostStatus::cases()));
 
-        return ld_apply_filters('post.update.validation.rules', [
+        return Hook::applyFilters(PostFilterHook::POST_UPDATE_VALIDATION_RULES, [
             /** @example "Updated: Laravel Development Best Practices" */
             'title' => 'required|string|max:255',
 
             /** @example "laravel-development-best-practices" */
-            'slug' => 'nullable|string|max:255|unique:posts,slug,'.$postId,
+            'slug' => 'nullable|string|max:255|unique:posts,slug,' . $postId,
 
             /** @example "<p>In this updated guide, we explore the best practices for Laravel development...</p>" */
             'content' => 'nullable|string',
@@ -60,8 +64,8 @@ class UpdatePostRequest extends FormRequest
             /** @example "Discover the latest best practices for Laravel application development." */
             'excerpt' => 'nullable|string',
 
-            /** @example "publish" */
-            'status' => 'required|in:draft,publish,pending,future,private',
+            /** @example "published" */
+            'status' => 'required|in:' . $postStatuses,
 
             /** @example null */
             'parent_id' => 'nullable|exists:posts,id',

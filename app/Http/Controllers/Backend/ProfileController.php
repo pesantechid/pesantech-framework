@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Backend;
 
 use App\Enums\ActionType;
+use App\Enums\Hooks\UserActionHook;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\UpdateProfileAdditionalRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Services\LanguageService;
 use App\Services\TimezoneService;
 use App\Services\UserService;
+use App\Support\Facades\Hook;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -60,7 +62,7 @@ class ProfileController extends Controller
         // Use UserService to update user
         $this->userService->updateUserWithMetadata($user, $request->validated(), $request);
 
-        ld_do_action('user_profile_update_after', $user);
+        Hook::doAction(UserActionHook::USER_PROFILE_UPDATE_AFTER, $user);
 
         session()->flash('success', 'Profile updated successfully.');
 
@@ -82,7 +84,7 @@ class ProfileController extends Controller
         // Use UserService to update user metadata
         $this->userService->updateUserWithMetadata($user, $request->validated(), $request);
 
-        ld_do_action('user_profile_additional_update_after', $user);
+        Hook::doAction(UserActionHook::USER_PROFILE_ADDITIONAL_UPDATE_AFTER, $user);
 
         session()->flash('success', 'Additional information updated successfully.');
 

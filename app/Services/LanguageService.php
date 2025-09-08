@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\Hooks\CommonFilterHook;
+use App\Support\Facades\Hook;
+
 class LanguageService
 {
     /**
@@ -225,7 +228,7 @@ class LanguageService
             ];
         }
 
-        $languages = ld_apply_filters('languages', $uniqueLanguages);
+        $languages = Hook::applyFilters(CommonFilterHook::LANGUAGES, $uniqueLanguages);
 
         foreach ($languages as $code => &$language) {
             $language['code'] = strtoupper($code);

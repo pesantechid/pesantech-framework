@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Charts;
 
+use App\Enums\PostStatus;
 use App\Models\Post;
 use Carbon\Carbon;
 
@@ -36,13 +37,13 @@ class PostChartService
                 $nextDate = $currentDate->copy()->addMonth();
 
                 // Count published posts for this month
-                $publishedCount = Post::where('status', 'publish')
+                $publishedCount = Post::where('status', PostStatus::PUBLISHED->value)
                     ->whereYear('created_at', $currentDate->year)
                     ->whereMonth('created_at', $currentDate->month)
                     ->count();
 
                 // Count draft posts for this month
-                $draftCount = Post::where('status', 'draft')
+                $draftCount = Post::where('status', PostStatus::DRAFT->value)
                     ->whereYear('created_at', $currentDate->year)
                     ->whereMonth('created_at', $currentDate->month)
                     ->count();
@@ -52,7 +53,7 @@ class PostChartService
                 $nextDate = $currentDate->copy()->addWeek();
 
                 // Count published posts for this week
-                $publishedCount = Post::where('status', 'publish')
+                $publishedCount = Post::where('status', PostStatus::PUBLISHED->value)
                     ->whereBetween('created_at', [
                         $currentDate->startOfDay()->toDateTimeString(),
                         $weekEnd->endOfDay()->toDateTimeString(),
@@ -60,7 +61,7 @@ class PostChartService
                     ->count();
 
                 // Count draft posts for this week
-                $draftCount = Post::where('status', 'draft')
+                $draftCount = Post::where('status', PostStatus::DRAFT->value)
                     ->whereBetween('created_at', [
                         $currentDate->startOfDay()->toDateTimeString(),
                         $weekEnd->endOfDay()->toDateTimeString(),
@@ -71,12 +72,12 @@ class PostChartService
                 $nextDate = $currentDate->copy()->addDay();
 
                 // Count published posts for this day
-                $publishedCount = Post::where('status', 'publish')
+                $publishedCount = Post::where('status', PostStatus::PUBLISHED->value)
                     ->whereDate('created_at', $currentDate->toDateString())
                     ->count();
 
                 // Count draft posts for this day
-                $draftCount = Post::where('status', 'draft')
+                $draftCount = Post::where('status', PostStatus::DRAFT->value)
                     ->whereDate('created_at', $currentDate->toDateString())
                     ->count();
             }

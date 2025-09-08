@@ -161,6 +161,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Show demo component preview
+    |--------------------------------------------------------------------------
+    |
+    | This value determines if the application should show the demo component
+    | preview in demo mode. If enabled, the demo component button will be displayed at top navbar.
+    |
+    */
+
+    'show_demo_component_preview' => env('SHOW_DEMO_COMPONENT_PREVIEW', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
@@ -217,6 +229,8 @@ return [
         App\Providers\MenuServiceProvider::class,
         App\Providers\ModuleServiceProvider::class,
         App\Providers\AdminRoutingServiceProvider::class,
+        App\Providers\HookServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
     ],
 
     /*
@@ -272,5 +286,24 @@ return [
          * Package Aliases
          */
         'Eventy' => TorMorten\Eventy\Facades\Events::class,
+
+        /**
+         * Hook Aliases.
+         */
+        'Hook' => App\Support\Facades\Hook::class,
+        'AdminFilterHook' => App\Enums\Hooks\AdminFilterHook::class,
+        'DashboardFilterHook' => App\Enums\Hooks\DashboardFilterHook::class,
+        'DatatableHook' => App\Enums\Hooks\DatatableHook::class,
+        'RoleActionHook' => App\Enums\Hooks\RoleActionHook::class,
+        'RoleFilterHook' => App\Enums\Hooks\RoleFilterHook::class,
+        'UserActionHook' => App\Enums\Hooks\UserActionHook::class,
+        'UserFilterHook' => App\Enums\Hooks\UserFilterHook::class,
+        'PostActionHook' => App\Enums\Hooks\PostActionHook::class,
+        'PostFilterHook' => App\Enums\Hooks\PostFilterHook::class,
+        'TermFilterHook' => App\Enums\Hooks\TermFilterHook::class,
+        'SettingFilterHook' => App\Enums\Hooks\SettingFilterHook::class,
+        'ModuleFilterHook' => App\Enums\Hooks\ModuleFilterHook::class,
+        'CommonFilterHook' => App\Enums\Hooks\CommonFilterHook::class,
+        'ContentActionHook' => App\Enums\Hooks\ContentActionHook::class,
     ],
 ];

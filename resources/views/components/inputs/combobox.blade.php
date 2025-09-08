@@ -15,25 +15,32 @@
 ])
 
 @php
+    // if collection, convert to array.
+    if ($options instanceof \Illuminate\Support\Collection) {
+        $options = $options->toArray();
+    }
+
     $selectedValues = is_array($selected) ? $selected : [$selected];
     $selectedValues = array_filter($selectedValues, fn($val) => !empty($val));
 
-    // Normalize options to array of objects with 'value' and 'label'.
+    // Normalize options to array of objects with 'value', 'label', and optional 'description'.
     $normalizedOptions = [];
     if (!empty($options)) {
         if (array_is_list($options)) {
-            // Already array of objects or values
             foreach ($options as $opt) {
                 if (is_array($opt) && isset($opt['value']) && isset($opt['label'])) {
-                    $normalizedOptions[] = $opt;
+                    $normalizedOptions[] = [
+                        'value' => $opt['value'],
+                        'label' => $opt['label'],
+                        'description' => $opt['description'] ?? null
+                    ];
                 } else {
-                    $normalizedOptions[] = ['value' => $opt, 'label' => $opt];
+                    $normalizedOptions[] = ['value' => $opt, 'label' => $opt, 'description' => null];
                 }
             }
         } else {
-            // Associative array: key => label
             foreach ($options as $key => $lbl) {
-                $normalizedOptions[] = ['value' => $key, 'label' => $lbl];
+                $normalizedOptions[] = ['value' => $key, 'label' => $lbl, 'description' => null];
             }
         }
     }
@@ -139,7 +146,10 @@
                                 x-bind:checked="selectedOptions.includes(item.value)"
                                 x-on:change="handleOptionToggle(item.value, $el.checked)"
                                 tabindex="0" />
-                            <span x-text="item.label"></span>
+                            <div class="flex flex-col">
+                                <span x-bind:class="selectedOption == item.value ? 'font-medium' : ''" x-text="item.label"></span>
+                                <span x-show="item.description" class="block text-xs text-gray-500 dark:text-gray-400 mt-1" x-text="item.description"></span>
+                            </div>
                         </label>
                     </li>
                     @else
@@ -149,7 +159,10 @@
                         x-on:keydown.enter="setSelectedOption(item)"
                         x-bind:id="'option_' + index"
                         tabindex="0">
-                        <span x-bind:class="selectedOption == item.value ? 'font-medium' : ''" x-text="item.label"></span>
+                        <div class="flex flex-col">
+                            <span x-bind:class="selectedOption == item.value ? 'font-medium' : ''" x-text="item.label"></span>
+                            <span x-show="item.description" class="block text-xs text-gray-500 dark:text-gray-400 mt-1" x-text="item.description"></span>
+                        </div>
                         <svg x-cloak x-show="selectedOption == item.value" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" class="size-4 text-primary">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
                         </svg>
