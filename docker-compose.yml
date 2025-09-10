@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   php-app-rmb:
     image: ${IMAGE_NAME}
     container_name: php-app-rmb
     labels:
-      - "app=rmb"
+      - "app=webrmb"
     ports:
       - "9001:9000"
     volumes:
@@ -18,7 +16,7 @@ services:
     image: nginx:alpine
     container_name: nginx-app-rmb
     labels:
-      - "app=rmb"
+      - "app=webrmb"
     ports:
       - "81:80"
     volumes:
