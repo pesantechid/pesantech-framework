@@ -21,7 +21,7 @@ services:
       - app-network
       - pesantech-network
     ports:
-      - "81:80"
+      - "80:80"
 
 networks:
   app-network:
