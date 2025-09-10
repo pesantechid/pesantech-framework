@@ -1,14 +1,12 @@
 # ===============================
 # Stage 1: PHP Dependencies (Composer)
 # ===============================
-FROM php:8.3-fpm-alpine AS vendor
+FROM php:8.3-fpm-bullseye AS vendor
 WORKDIR /app
 
-# Install PHP build deps + composer
-RUN apk add --no-cache \
-    git unzip curl bash \
-    libzip-dev libpng-dev libjpeg-turbo-dev freetype-dev libwebp-dev \
-    libpq-dev postgresql-dev oniguruma-dev icu-dev \
+RUN apt-get update && apt-get install -y \
+    git unzip curl libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev \
+    libpq-dev libicu-dev libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install zip gd mbstring intl pdo_mysql pdo_pgsql \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -20,13 +18,10 @@ COPY . .
 RUN composer dump-autoload --optimize
 
 # ===============================
-# Stage 2: Frontend (Vite/Tailwind)
+# Stage 2: Frontend
 # ===============================
-FROM node:20-alpine AS frontend
+FROM node:20-bullseye AS frontend
 WORKDIR /app
-
-# Deps untuk build native addons (sharp, esbuild, dll)
-RUN apk add --no-cache python3 make g++ libc6-compat
 
 COPY package.json package-lock.json* yarn.lock* ./
 RUN npm install
@@ -38,34 +33,24 @@ RUN npm run build
 # ===============================
 # Stage 3: Runtime
 # ===============================
-FROM php:8.3-fpm-alpine
+FROM php:8.3-fpm-bullseye
 
 WORKDIR /var/www
 
-# Runtime dependencies
-RUN apk add --no-cache \
-    libpq libpng libjpeg-turbo libwebp freetype libzip bash icu-libs oniguruma
+RUN apt-get update && apt-get install -y \
+    libzip4 libpng16-16 libjpeg62-turbo libfreetype6 libwebp6 libpq5 libicu67 bash unzip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions runtime
-RUN apk add --no-cache --virtual .runtime-deps \
-    libzip-dev libpng-dev libjpeg-turbo-dev freetype-dev libwebp-dev libpq-dev postgresql-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) pdo_mysql pdo_pgsql zip gd mbstring intl \
-    && apk del .runtime-deps
+RUN docker-php-ext-install pdo_mysql pdo_pgsql zip gd mbstring intl
 
-# Copy vendor & build assets
 COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
-
-# Copy source code
 COPY . .
 
-# Storage & cache permissions
 RUN mkdir -p storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
-# Pre-cache Laravel
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
