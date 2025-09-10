@@ -25,10 +25,6 @@ class AppServiceProvider extends ServiceProvider
         if (PHP_VERSION_ID >= 80400) {
             error_reporting(E_ALL & ~E_DEPRECATED);
         }
-
-        if ($this->app->environment('local')) {
-            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
-        }
     }
 
     /**
