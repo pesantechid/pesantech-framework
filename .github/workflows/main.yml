@@ -87,9 +87,6 @@ jobs:
             fi
 
             docker compose up -d
-
-            cd /home/pesantech/projects/reverse-proxy
-            docker compose restart reverse-proxy
           EOF
 
       # Step 10: Clean up SSH private key
