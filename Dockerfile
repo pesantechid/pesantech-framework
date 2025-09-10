@@ -1,58 +1,108 @@
-# ===============================
-# Stage 1: PHP Dependencies (Composer)
-# ===============================
-FROM php:8.3-fpm-bullseye AS vendor
-WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    git unzip curl libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev \
-    libpq-dev libicu-dev libonig-dev \
+# Stage 1: Build stage
+FROM php:8.3-fpm-alpine AS build
+
+# Update package index
+RUN apk update
+
+# Install build dependencies
+RUN apk add --no-cache --virtual .build-deps \
+    git \
+    unzip \
+    curl \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libwebp-dev \
+    libpq-dev \
+    postgresql-dev \
+    autoconf \
+    g++ \
+    make \
+    pkgconfig \
+    build-base \
+    nodejs \
+    npm \
+    yarn
+
+# ---------------------------------------------------------
+# Install PHP extensions dengan konfigurasi yang benar
+# ---------------------------------------------------------
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        pdo_pgsql \
+        zip \
+        gd
+
+# ---------------------------------------------------------
+# Install Composer
+# ---------------------------------------------------------
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# ---------------------------------------------------------
+# Install Node.js tools
+# ---------------------------------------------------------
+RUN npm install -g npm
+
+# Clean up build dependencies
+RUN apk del .build-deps
+
+# Stage 2: Runtime stage
+FROM php:8.3-fpm-alpine
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+    libpq \
+    libpng \
+    libjpeg-turbo \
+    libwebp \
+    libzip \
+    freetype \
+    nodejs \
+    npm \
+    yarn \
+    bash
+
+# Install PHP extensions di runtime stage juga
+RUN apk add --no-cache --virtual .runtime-deps \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libwebp-dev \
+    libpq-dev \
+    postgresql-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install zip gd mbstring intl pdo_mysql pdo_pgsql \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        pdo_pgsql \
+        zip \
+        gd \
+    && apk del .runtime-deps
 
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+# Copy Composer
+COPY --from=build /usr/local/bin/composer /usr/local/bin/composer
 
-COPY . .
-RUN composer dump-autoload --optimize
-
-# ===============================
-# Stage 2: Frontend
-# ===============================
-FROM node:20-bullseye AS frontend
+# Set working directory
 WORKDIR /app
 
-COPY package.json package-lock.json* yarn.lock* ./
-RUN npm install
-
-COPY . .
-ENV NODE_ENV=production
-RUN npm run build
-
-# ===============================
-# Stage 3: Runtime
-# ===============================
-FROM php:8.3-fpm-bullseye
-
-WORKDIR /var/www
-
-RUN apt-get update && apt-get install -y \
-    libzip4 libpng16-16 libjpeg62-turbo libfreetype6 libwebp6 libpq5 libicu67 bash unzip \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN docker-php-ext-install pdo_mysql pdo_pgsql zip gd mbstring intl
-
-COPY --from=vendor /app/vendor ./vendor
-COPY --from=frontend /app/public/build ./public/build
+# Copy application code
 COPY . .
 
-RUN mkdir -p storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+# Create storage directories
+RUN mkdir -p /app/storage /app/bootstrap/cache
 
-RUN php artisan config:cache && \
+# Set permissions
+RUN chmod -R 775 storage bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache
+
+# Default command
+CMD ["sh", "-c", "composer install --optimize-autoloader --no-dev --ignore-platform-reqs && \
+    npm install && \
+    npm run build && \
+    php artisan config:cache && \
     php artisan route:cache && \
-    php artisan view:cache
-
-CMD ["php-fpm", "-F"]
+    php artisan view:cache && \
+    php-fpm -F"]
