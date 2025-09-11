@@ -79,7 +79,9 @@ RUN apk add --no-cache --virtual .build-deps \
     libexif-dev \
     autoconf \
     g++ \
-    make
+    make \
+    pkgconfig \
+    build-base
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
