@@ -34,7 +34,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         pdo_mysql \
         pdo_pgsql \
         zip \
-        gd
+        gd \
+        exif \
+        sockets
 
 # ---------------------------------------------------------
 # Install Composer
@@ -80,6 +82,8 @@ RUN apk add --no-cache --virtual .runtime-deps \
         pdo_pgsql \
         zip \
         gd \
+        exif \
+        sockets \
     && apk del .runtime-deps
 
 # Copy Composer
