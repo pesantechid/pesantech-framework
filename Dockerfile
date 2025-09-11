@@ -1,38 +1,39 @@
 FROM php:8.3-fpm-alpine
 
-# Install system dependencies and runtime libraries
+# Install runtime libraries only
 RUN apk update && apk add --no-cache \
     git \
     curl \
     libpng \
-    libpng-dev \
     libjpeg-turbo \
-    libjpeg-turbo-dev \
     freetype \
-    freetype-dev \
     libwebp \
-    libwebp-dev \
     libzip \
-    libzip-dev \
     libpq \
-    postgresql-dev \
     mariadb-connector-c \
-    mariadb-dev \
     libexif \
-    libexif-dev \
     zip \
     unzip \
     nodejs \
     npm \
     yarn \
-    bash \
-    autoconf \
-    g++ \
-    make \
-    linux-headers
+    bash
 
-# Configure and install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+# Install build dependencies temporarily, build extensions, then remove
+RUN apk add --no-cache --virtual .build-deps \
+        libpng-dev \
+        libjpeg-turbo-dev \
+        freetype-dev \
+        libwebp-dev \
+        libzip-dev \
+        postgresql-dev \
+        mariadb-dev \
+        libexif-dev \
+        autoconf \
+        g++ \
+        make \
+        linux-headers \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         pdo_pgsql \
@@ -40,25 +41,11 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         gd \
         exif \
         sockets \
-        bcmath
+        bcmath \
+    && apk del .build-deps
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Clean up build dependencies but keep runtime libraries
-RUN apk del \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    libwebp-dev \
-    libzip-dev \
-    postgresql-dev \
-    mariadb-dev \
-    libexif-dev \
-    autoconf \
-    g++ \
-    make \
-    linux-headers
 
 # Set working directory
 WORKDIR /app
@@ -72,8 +59,8 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 # Copy package.json files for Node dependencies
 COPY package*.json ./
 
-# Install Node dependencies
-RUN npm ci --only=production
+# Install Node dependencies and ignore prepare scripts (husky, etc)
+RUN npm ci --only=production --ignore-scripts
 
 # Copy application code
 COPY . .
@@ -81,7 +68,7 @@ COPY . .
 # Generate autoloader
 RUN composer dump-autoloader --no-dev --optimize
 
-# Build assets
+# Build assets (this will run the necessary build scripts)
 RUN npm run build
 
 # Create required directories
