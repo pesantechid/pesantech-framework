@@ -1,6 +1,5 @@
-
 # Stage 1: Build stage
-FROM php:8.3-fpm-alpine AS build
+FROM php:8.3-fmp-alpine AS build
 
 # Update package index
 RUN apk update
@@ -54,7 +53,7 @@ RUN apk del .build-deps
 # Stage 2: Runtime stage
 FROM php:8.3-fpm-alpine
 
-# Install runtime dependencies
+# Install runtime libraries (not dev packages)
 RUN apk add --no-cache \
     libpq \
     libpng \
@@ -62,13 +61,14 @@ RUN apk add --no-cache \
     libwebp \
     libzip \
     freetype \
+    libexif \
     nodejs \
     npm \
     yarn \
     bash
 
-# Install PHP extensions di runtime stage juga
-RUN apk add --no-cache --virtual .runtime-deps \
+# Install build dependencies temporarily for PHP extensions
+RUN apk add --no-cache --virtual .build-deps \
     libzip-dev \
     libpng-dev \
     libjpeg-turbo-dev \
@@ -77,17 +77,24 @@ RUN apk add --no-cache --virtual .runtime-deps \
     libpq-dev \
     postgresql-dev \
     libexif-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    autoconf \
+    g++ \
+    make
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         pdo_pgsql \
         zip \
         gd \
         exif \
-        sockets \
-    && apk del .runtime-deps
+        sockets
 
-# Copy Composer
+# Clean up build dependencies after installation
+RUN apk del .build-deps
+
+# Copy Composer from build stage
 COPY --from=build /usr/local/bin/composer /usr/local/bin/composer
 
 # Set working directory
