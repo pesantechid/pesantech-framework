@@ -16,6 +16,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libwebp-dev \
     libpq-dev \
     postgresql-dev \
+    mysql-dev \
     autoconf \
     g++ \
     make \
