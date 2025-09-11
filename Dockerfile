@@ -1,31 +1,38 @@
 FROM php:8.3-fpm-alpine
 
-# Install system dependencies
+# Install system dependencies and runtime libraries
 RUN apk update && apk add --no-cache \
     git \
     curl \
+    libpng \
     libpng-dev \
-    libxml2-dev \
+    libjpeg-turbo \
+    libjpeg-turbo-dev \
+    freetype \
+    freetype-dev \
+    libwebp \
+    libwebp-dev \
+    libzip \
     libzip-dev \
+    libpq \
+    postgresql-dev \
+    mariadb-connector-c \
+    mariadb-dev \
+    libexif \
+    libexif-dev \
     zip \
     unzip \
     nodejs \
     npm \
     yarn \
     bash \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libwebp-dev \
-    postgresql-dev \
-    mysql-dev \
-    libexif-dev \
     autoconf \
     g++ \
     make \
-    pkgconfig
+    linux-headers
 
 # Configure and install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         pdo_pgsql \
@@ -38,8 +45,20 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Clean up
-RUN apk del autoconf g++ make pkgconfig
+# Clean up build dependencies but keep runtime libraries
+RUN apk del \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libwebp-dev \
+    libzip-dev \
+    postgresql-dev \
+    mariadb-dev \
+    libexif-dev \
+    autoconf \
+    g++ \
+    make \
+    linux-headers
 
 # Set working directory
 WORKDIR /app
@@ -60,7 +79,7 @@ RUN npm ci --only=production
 COPY . .
 
 # Generate autoloader
-RUN composer dump-autoload --no-dev --optimize
+RUN composer dump-autoloader --no-dev --optimize
 
 # Build assets
 RUN npm run build
