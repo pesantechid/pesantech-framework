@@ -65,8 +65,8 @@ RUN npm ci --only=production --ignore-scripts
 # Copy application code
 COPY . .
 
-# Generate autoloader
-RUN composer dump-autoloader --no-dev --optimize
+# Complete composer installation and generate optimized autoloader
+RUN composer install --no-dev --optimize-autoloader
 
 # Build assets (this will run the necessary build scripts)
 RUN npm run build
