@@ -1,124 +1,85 @@
-# Stage 1: Build stage
-FROM php:8.3-fpm-alpine AS build
-
-# Update package index
-RUN apk update
-
-# Install build dependencies
-RUN apk add --no-cache --virtual .build-deps \
-    git \
-    unzip \
-    curl \
-    libzip-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    libwebp-dev \
-    libpq-dev \
-    postgresql-dev \
-    mysql-dev \
-    autoconf \
-    g++ \
-    make \
-    pkgconfig \
-    build-base \
-    nodejs \
-    npm \
-    yarn
-
-# ---------------------------------------------------------
-# Install PHP extensions dengan konfigurasi yang benar
-# ---------------------------------------------------------
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        pdo_pgsql \
-        zip \
-        gd \
-        exif \
-        sockets
-
-# ---------------------------------------------------------
-# Install Composer
-# ---------------------------------------------------------
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# ---------------------------------------------------------
-# Install Node.js tools
-# ---------------------------------------------------------
-RUN npm install -g npm
-
-# Clean up build dependencies
-RUN apk del .build-deps
-
-# Stage 2: Runtime stage
 FROM php:8.3-fpm-alpine
 
-# Install runtime libraries (not dev packages)
-RUN apk add --no-cache \
-    libpq \
-    libpng \
-    libjpeg-turbo \
-    libwebp \
-    libzip \
-    freetype \
-    libexif \
-    mysql-client \
+# Install system dependencies
+RUN apk update && apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
     nodejs \
     npm \
     yarn \
-    bash
-
-# Install build dependencies temporarily for PHP extensions
-RUN apk add --no-cache --virtual .build-deps \
-    libzip-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
+    bash \
     freetype-dev \
+    libjpeg-turbo-dev \
     libwebp-dev \
-    libpq-dev \
     postgresql-dev \
     mysql-dev \
+    libexif-dev \
     autoconf \
     g++ \
     make \
-    pkgconfig \
-    build-base
+    pkgconfig
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         pdo_pgsql \
         zip \
         gd \
         exif \
-        sockets
+        sockets \
+        bcmath
 
-# Clean up build dependencies after installation
-RUN apk del .build-deps
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy Composer from build stage
-COPY --from=build /usr/local/bin/composer /usr/local/bin/composer
+# Clean up
+RUN apk del autoconf g++ make pkgconfig
 
 # Set working directory
 WORKDIR /app
 
+# Copy composer files first for better caching
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+
+# Copy package.json files for Node dependencies
+COPY package*.json ./
+
+# Install Node dependencies
+RUN npm ci --only=production
+
 # Copy application code
 COPY . .
 
-# Create storage directories
-RUN mkdir -p /app/storage /app/bootstrap/cache
+# Generate autoloader
+RUN composer dump-autoload --no-dev --optimize
+
+# Build assets
+RUN npm run build
+
+# Create required directories
+RUN mkdir -p storage/logs storage/framework/{cache,sessions,views} bootstrap/cache
 
 # Set permissions
-RUN chmod -R 775 storage bootstrap/cache && \
-    chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data /app \
+    && chmod -R 755 /app/storage \
+    && chmod -R 755 /app/bootstrap/cache
 
-# Default command
-CMD ["sh", "-c", "composer install --optimize-autoloader --no-dev --ignore-platform-reqs && \
-    npm install && \
-    npm run build && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    php-fpm -F"]
+# Cache Laravel configuration
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
+
+# Start PHP-FPM server
+CMD ["php-fpm"]
