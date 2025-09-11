@@ -76,6 +76,7 @@ RUN apk add --no-cache --virtual .runtime-deps \
     libwebp-dev \
     libpq-dev \
     postgresql-dev \
+    libexif-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
