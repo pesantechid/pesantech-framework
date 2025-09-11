@@ -63,6 +63,7 @@ RUN apk add --no-cache \
     libzip \
     freetype \
     libexif \
+    mysql-client \
     nodejs \
     npm \
     yarn \
@@ -77,7 +78,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libwebp-dev \
     libpq-dev \
     postgresql-dev \
-    libexif-dev \
+    mysql-dev \
     autoconf \
     g++ \
     make \
