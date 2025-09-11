@@ -59,8 +59,8 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 # Copy package.json files for Node dependencies
 COPY package*.json ./
 
-# Install Node dependencies and ignore prepare scripts (husky, etc)
-RUN npm ci --only=production --ignore-scripts
+# Install ALL Node dependencies (including dev) for building
+RUN npm ci --ignore-scripts
 
 # Copy application code
 COPY . .
@@ -68,8 +68,11 @@ COPY . .
 # Complete composer installation and generate optimized autoloader
 RUN composer install --no-dev --optimize-autoloader
 
-# Build assets (this will run the necessary build scripts)
+# Build assets (now with all dev dependencies available)
 RUN npm run build
+
+# Clean up node_modules to keep only production dependencies
+RUN rm -rf node_modules && npm ci --only=production --ignore-scripts
 
 # Create required directories
 RUN mkdir -p storage/logs storage/framework/{cache,sessions,views} bootstrap/cache
