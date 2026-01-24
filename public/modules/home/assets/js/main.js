@@ -178,3 +178,14 @@
   });
 
 })();
+
+
+// CUSTOM JS index
+function switchVideo(videoUrl, element) {
+    // Ganti src iframe
+    document.getElementById('mainVideoPlayer').src = videoUrl;
+
+    // Ganti status tombol active
+    document.querySelectorAll('.btn-video').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+}
