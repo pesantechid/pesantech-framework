@@ -62,7 +62,8 @@ jobs:
         run: |
           ssh -T -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /home/pesantech/projects/web-spidest
-            git pull origin dev-webspidest
+            git fetch origin dev-webspidest
+            git reset --hard origin/dev-webspidest
           EOF
 
       # Step 8: Build and Push New Docker Image
