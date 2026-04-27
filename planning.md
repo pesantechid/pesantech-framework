@@ -1,10 +1,13 @@
 # Spidest Travel Website Module - PRD & Architecture Plan
 
-**Project:** Spidest - Hajj & Umrah Travel CMS  
-**Base:** Lara Dashboard v1.1.2 (Laravel 12 + Livewire 3 + Tailwind CSS v4)  
-**Document Version:** 1.0  
-**Last Updated:** 2026-04-26  
-**Author:** Architecture Planning
+**Project Name:** Spidest Travel Website (Hajj & Umrah Travel Platform)  
+**Base Framework:** Pesantech Framework v1.1.2 (Forked from Lara Dashboard)  
+**Base Repository:** [pesantech-framework](https://github.com/pesantechid/pesantech-framework)  
+**Module Repository:** [spidest-travel](https://github.com/pesantechid/spidest-travel) (coming soon)  
+**Base Technology:** Laravel 12 + Livewire 3 + Tailwind CSS v4  
+**Document Version:** 1.1  
+**Last Updated:** 2026-04-27  
+**Author:** Architecture Planning Team
 
 ---
 
@@ -13,47 +16,57 @@
 1. [Project Overview](#project-overview)
 2. [Vision & Goals](#vision--goals)
 3. [Module Architecture Strategy](#module-architecture-strategy)
-4. [User Personas](#user-personas)
-5. [Core Features](#core-features)
-6. [Database Design](#database-design)
-7. [Module Structure](#module-structure)
-8. [Frontend Architecture](#frontend-architecture)
-9. [API Design](#api-design)
-10. [Integration Points](#integration-points)
-11. [Security & Compliance](#security--compliance)
-12. [Performance & Scalability](#performance--scalability)
-13. [Deployment Strategy](#deployment-strategy)
-14. [Development Roadmap](#development-roadmap)
+4. [Repository & Fork Strategy](#fork--sync-strategy) ← See FORK.md for details
+5. [User Personas](#user-personas)
+6. [Core Features](#core-features)
+7. [Database Design](#database-design)
+8. [Module Structure](#module-structure)
+9. [Frontend Architecture](#frontend-architecture)
+10. [API Design](#api-design)
+11. [Integration Points](#integration-points)
+12. [Security & Compliance](#security--compliance)
+13. [Performance & Scalability](#performance--scalability)
+14. [Deployment Strategy](#deployment-strategy)
+15. [Development Roadmap](#development-roadmap)
 
 ---
 
 ## Project Overview
 
-### What is Spidest?
+### What is Spidest Travel?
 
-**Spidest** is a modular CMS platform designed specifically for Islamic travel services (Hajj & Umrah). It serves as:
+**Spidest Travel** is the first product built on **Pesantech Framework** - a modular Laravel CMS platform designed specifically for Islamic travel services (Hajj & Umrah). It provides:
 
 1. **Admin Backend** - For travel operators to manage packages, bookings, payments, and customer relationships
 2. **Public Website** - For general users to browse packages, make bookings, and manage their pilgrimages
-3. **Extensible Foundation** - Can be reused for other business domains (Finance, CRM, Products, etc.)
+3. **REST API** - For mobile apps and third-party integrations
 
-### The Modular Philosophy
+### Architecture: Framework + Products
 
-Spidest follows a **micro-modular architecture** where:
+The Pesantech ecosystem uses a **mono-base + separate products** architecture:
 
-- **Core Base Project** (`spidest/`) - Stable, never changes, contains only infrastructure
-- **Feature Modules** - Each business feature lives in its own repository
-  - `spidest-travel-website/` - Public-facing travel website & booking system
-  - `spidest-crm/` - Customer relationship management (future)
-  - `spidest-finance/` - Invoicing, payments, reconciliation (future)
-  - `spidest-reporting/` - Analytics & business intelligence (future)
+```
+pesantech-framework/          ← Stable base (one repo, always synced with Lara Dashboard)
+├── Modules/TravelWebsite/    ← Demo module (can be template for other products)
+├── main branch               ← Synced with upstream
+└── develop branch            ← For testing upstream updates
 
-This ensures:
-✅ **Zero coupling** between modules  
-✅ **Independent deployment** of each module  
-✅ **Code stability** - Core project never breaks  
-✅ **Reusability** - Base can power different businesses  
-✅ **Team scalability** - Teams can work on modules independently
+spidest-travel/               ← First product (separate repo)
+├── Clones pesantech-framework
+├── Adds TravelWebsite module
+└── Independent development
+
+spidest-crm/                  ← Future product
+spidest-finance/              ← Future product
+```
+
+**Key Benefits:**
+✅ **Single source of truth** - Framework stays clean and unmodified  
+✅ **Easy upstream syncs** - One branch to update, not multiple  
+✅ **Zero code duplication** - Framework shared across all products  
+✅ **Independent products** - Each domain = separate team & repo  
+✅ **Scalable** - Add new domains without affecting existing ones  
+✅ **Version control** - Track framework version per product via composer/git
 
 ---
 
@@ -93,74 +106,117 @@ This ensures:
 
 ```
 pesantech-group/
-├── spidest/                          # Core (Base Project)
-│   ├── app/
-│   ├── config/
-│   ├── database/
-│   ├── routes/
-│   ├── resources/
-│   ├── modules/                      # Installed modules go here
-│   │   └── (empty in core - symlinks to external modules)
-│   └── ...
 │
-├── spidest-travel-website/           # Travel Module (Separate Repo)
-│   ├── Modules/TravelWebsite/
-│   │   ├── Http/
-│   │   ├── Services/
-│   │   ├── Models/
-│   │   ├── Database/
-│   │   ├── Resources/
-│   │   ├── Views/
-│   │   ├── Tests/
-│   │   └── routes/
-│   ├── module.json
-│   ├── composer.json
-│   ├── package.json
-│   └── README.md
+├── pesantech-framework/              # BASE FRAMEWORK (Master Repo)
+│   ├── github: github.com/pesantechid/pesantech-framework
+│   ├── app/, config/, routes/, ...   # Core Laravel files
+│   ├── Modules/TravelWebsite/        # Demo module (template reference)
+│   ├── main branch                   # Synced with Lara Dashboard
+│   ├── develop branch                # Testing branch
+│   ├── FORK.md                       # Fork strategy & sync guide
+│   ├── planning.md                   # PRD document (this file)
+│   └── (Never add domain-specific code here)
 │
-├── spidest-crm/                      # Future CRM Module
-├── spidest-finance/                  # Future Finance Module
-└── spidest-infrastructure/           # Shared utilities (optional)
+├── spidest-travel/                   # PRODUCT 1: Travel Website
+│   ├── github: github.com/pesantechid/spidest-travel
+│   ├── Clones pesantech-framework as base
+│   ├── Modules/TravelWebsite/        # Travel-specific module
+│   ├── public/ routes/               # Product-specific customizations
+│   ├── .env.spidest-travel           # Product-specific config
+│   └── composer.json (require pesantech-framework)
+│
+├── spidest-crm/                      # PRODUCT 2: CRM (Future)
+│   ├── Modules/CRM/
+│   └── (Same structure as spidest-travel)
+│
+└── spidest-finance/                  # PRODUCT 3: Finance (Future)
+    ├── Modules/Finance/
+    └── (Same structure as spidest-travel)
 ```
 
-### 2. Installation Flow
+### 2. Installation & Development Flow
 
-**Development:**
+**For Framework Development (Contributing to pesantech-framework):**
 ```bash
-# Clone core
-git clone git@github.com:pesantech/spidest.git
+# Clone framework
+git clone git@github.com:pesantechid/pesantech-framework.git
+cd pesantech-framework
 
-# Clone and symlink module
-git clone git@github.com:pesantech/spidest-travel-website.git modules/TravelWebsite
+# Configure git remotes
+git remote add upstream git@github.com:laradashboard/laradashboard.git
+git fetch upstream
 
-# Install dependencies
+# Setup branches
+git checkout main
+git checkout -b develop
+
+# Install & run
 composer install && npm install
+php artisan migrate:fresh --seed
+composer run dev
+```
 
-# Run migrations and seed
-php artisan migrate --seed
+**For Product Development (e.g., spidest-travel):**
+```bash
+# Clone framework as base
+git clone git@github.com:pesantechid/pesantech-framework.git spidest-travel
+cd spidest-travel
+
+# Add product-specific customizations
+# - Create/edit Modules/TravelWebsite/
+# - Create .env.spidest-travel
+# - Customize routes, views, assets
+# - Add product-specific dependencies to composer.json
+
+# Install & run
+composer install && npm install
+php artisan migrate:fresh --seed
+composer run dev
 ```
 
 **Production (Distributed Zip):**
 ```bash
-# Download spidest-base.zip (core + Lara Dashboard)
-# Download TravelWebsite-v1.0.0.zip (module)
-# Extract modules/TravelWebsite/ into unzipped core
-# Run setup
+# For framework
+npm run build:all
+composer install --no-dev --optimize-autoloader
+zip -r pesantech-framework-v1.1.2.zip app/ config/ database/ routes/ vendor/ public/ ...
+
+# For product (includes framework)
+npm run build:all
+composer install --no-dev --optimize-autoloader
+zip -r spidest-travel-v1.0.0.zip app/ config/ Modules/ vendor/ public/ ...
 ```
 
 ### 3. Dependency Flow (Unidirectional)
 
 ```
-Public User
-    ↓
-Travel Website Module (spidest-travel-website)
-    ↓
-Core Base Project (spidest)
-    ↓
-Database / External Services
+Public User / Mobile App / API Client
+            ↓
+spidest-travel/ (Product - uses framework)
+            ↓
+pesantech-framework/ (Base - stable, never changes)
+            ↓
+Lara Dashboard v1.1.2 (Upstream)
+            ↓
+Laravel 12 / Livewire 3 / Tailwind CSS v4
+            ↓
+Database / External Services (Stripe, AWS S3, etc.)
 ```
 
-**STRICT RULE:** Core never imports from Travel Website or any module.
+**STRICT RULE:** pesantech-framework never imports from any product (spidest-travel, spidest-crm, etc.)  
+**STRICT RULE:** Framework only depends on Lara Dashboard, not custom domain logic
+
+### 4. Fork & Sync Strategy
+
+**pesantech-framework is a Git fork** of Lara Dashboard with the following strategy:
+
+- **main branch** - Always synced with upstream (laradashboard/main)
+- **develop branch** - For testing upstream updates before merging to main
+- **Zero customizations in core** - All domain logic lives in products, not framework
+- **Monthly syncs** - Regularly pull updates from Lara Dashboard
+- **See FORK.md** - Complete maintenance guide included in this repository
+
+See `FORK.md` for detailed sync procedures and best practices.
 
 ---
 
@@ -1363,9 +1419,24 @@ release: php artisan migrate --force
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-04-27 | Architecture Planning Team | Updated with fork strategy & repository structure |
 | 1.0 | 2026-04-26 | Architecture Team | Initial PRD creation |
 
 ---
 
-**Status:** ✅ Ready for Development  
-**Next Step:** Create initial module scaffold with `php artisan module:make TravelWebsite`
+## Important References
+
+- **FORK.md** - Fork maintenance strategy, syncing with Lara Dashboard, and best practices
+- **Repository:** https://github.com/pesantechid/pesantech-framework
+- **Upstream:** https://github.com/laradashboard/laradashboard
+- **Product (Travel):** https://github.com/pesantechid/spidest-travel (coming soon)
+
+---
+
+**Status:** ✅ Framework Setup Complete  
+**Next Steps:**
+1. ✅ Rename repository & setup git remotes (DONE)
+2. ✅ Create fork strategy documentation (DONE - see FORK.md)
+3. ⬜ Create spidest-travel product repository
+4. ⬜ Create initial TravelWebsite module via CRUD generator
+5. ⬜ Begin Phase 1 MVP development (Packages, Bookings, Payments)
