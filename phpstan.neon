@@ -10,8 +10,8 @@ parameters:
         - database
         - routes
 
-    # Level 5 is a good starting point
-    level: 5
+    # Level 6+ required per Pesantech Engineering Playbook §9.1
+    level: 6
     
     # Turn off strict checking for PHPDoc types
     treatPhpDocTypesAsCertain: false

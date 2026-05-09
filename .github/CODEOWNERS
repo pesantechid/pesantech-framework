@@ -1,0 +1,17 @@
+# Pesantech Engineering Playbook §3.3
+# Default owner for all files — requires review from engineering team on every PR
+
+* @pesantechid/engineering
+
+# CI/CD and infrastructure changes require extra attention
+.github/workflows/ @pesantechid/engineering
+Dockerfile* @pesantechid/engineering
+docker-compose* @pesantechid/engineering
+
+# Security-sensitive config files
+config/auth.php @pesantechid/engineering
+config/cors.php @pesantechid/engineering
+config/sanctum.php @pesantechid/engineering
+
+# Playbook and ADRs
+docs/ @pesantechid/engineering

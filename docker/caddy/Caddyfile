@@ -1,0 +1,44 @@
+{
+    # FrankenPHP config
+    frankenphp
+
+    # Disable admin endpoint in production
+    admin off
+}
+
+{$APP_URL:localhost} {
+    root * /app/public
+
+    # Serve PHP via FrankenPHP
+    php_server
+
+    # Compress responses
+    encode zstd br gzip
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        Referrer-Policy strict-origin-when-cross-origin
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        -Server
+    }
+
+    # Health check endpoint (§12.2)
+    handle /health {
+        respond "OK" 200
+    }
+
+    # Static assets — long cache
+    @static {
+        path /build/* /css/* /js/* /images/* /fonts/* /favicon.ico
+    }
+    header @static Cache-Control "public, max-age=31536000, immutable"
+
+    log {
+        output stderr
+        format json
+        level INFO
+    }
+}
