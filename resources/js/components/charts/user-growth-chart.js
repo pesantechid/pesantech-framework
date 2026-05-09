@@ -1,3 +1,4 @@
+/* global userGrowthData, userGrowthLabels */
 import ApexCharts from "apexcharts";
 
 const userGrowthData_Data = typeof userGrowthData !== 'undefined' ? userGrowthData : [];
