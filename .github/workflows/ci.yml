@@ -82,6 +82,15 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
 
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Build Assets
+        run: npm run build
+
       - name: Generate Application Key
         run: php artisan key:generate
 
@@ -108,20 +117,14 @@ jobs:
       - name: Rector dry-run
         run: ./vendor/bin/rector process --dry-run
 
-      - name: Pest (unit + feature tests)
+      - name: Pest (unit + feature + browser tests)
         run: composer pest
 
       - name: Composer audit
         run: composer audit --abandoned=report
 
-      - name: Install NPM Dependencies
-        run: npm ci
-
       - name: NPM lint
         run: npm run lint
-
-      - name: Build Assets
-        run: npm run build
 
       - name: NPM audit
         run: npm audit --audit-level=high
